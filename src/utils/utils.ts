@@ -1,9 +1,18 @@
-import { Province } from "../types/region";
 import { Month } from "../types/month";
 import { RegionalData } from "../types/regional-data";
 
 import { NoDateFounError } from "./errors/errors";
 
+const clearPossessiveSuffix = (word: string): string => {
+  let clean = word.replace('-', '');
+  if (clean.endsWith('ի')) {
+    clean = clean.slice(0, -1);
+  } else if (clean.endsWith('ու') || clean.endsWith('վա')) {
+    clean = clean.slice(0, -2)
+  }
+
+  return clean;
+}
 
 const getDay = (word: string): number | undefined => {
   const numeric = word.match(/\d+/);
@@ -17,8 +26,7 @@ const getDate = (text: string[]): Date => {
   let month: number | undefined;
 
   for (let i = 0; i < text.length; i++) {
-    let word = text[i].replace('-', '');
-    if (word.endsWith('ի')) word = word.slice(0, -1);
+    const word = clearPossessiveSuffix(text[i]);
 
     if (word in Month) {
       month = Month[word as keyof typeof Month];
