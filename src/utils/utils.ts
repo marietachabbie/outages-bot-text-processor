@@ -102,21 +102,25 @@ const getProvince = (word: string): Province => {
 }
 
 const isCity = (word: string): boolean => {
-  return word === "քաղաք" || word === "քաղաքի" || word === "քաղաքում";
+  return word === "քաղաք" || word === "քաղաքը" || word === "քաղաքի" || word === "քաղաքում";
 }
 
 const isVillage = (word: string): boolean => {
-  return word === "գյուղ" || word === "գյուղի" || word === "գյուղում";
+  return word === "գյուղ" || word === "գյուղը" || word === "գյուղի" || word === "գյուղում";
 }
 
 const getStartIndex = (words: string[], idx: number): number => {
   let start: number = idx - 1;
   for (let i = idx - 1; i >= idx - 3; i--) {
-    if (isNotNumeric(words[i]) && isPartOfVillageName(words[i])) start = i;
+    if (isNotNumeric(words[i]) && !(words[i].endsWith(',')) && isPartOfVillageName(words[i])) start = i;
     else break;
   }
 
   return start;
+}
+
+const removeParsedWords = (words: string[], start: number, end: number) => {
+  for (let i = start; i <= end; i++) words[i] = '';
 }
 
 const getMunicipality = (words: string[], idx: number, province: Province): string => {
@@ -126,12 +130,13 @@ const getMunicipality = (words: string[], idx: number, province: Province): stri
 
   temp = words.slice(start, idx).join(" ");
   words[idx] = clearSuffixes(words[idx]);
-  if (isVillage(clearSuffixes(words[idx]))) {
+  if (isVillage(words[idx])) {
     if (VILLAGES[province].has(temp)) municipality = temp + " " + words[idx];
   } else if (isCity(words[idx])) {
     if (CITIES[province].has(temp)) municipality = temp + " " + words[idx];
   }
 
+  removeParsedWords(words, start, idx);
   return municipality;
 }
 
@@ -151,9 +156,10 @@ const didPrevAddressEnd = (word: string): boolean => {
   return !word || word.endsWith(",") || isConjunction(word) || !isNotNumeric(word);
 }
 
-const collectTempMunicipalities = (words: string[], idx: number): string[] => {
-  const result: string[] = [words[idx]];
+const collectTempMunicipalities = (words: string[], idx: number): { tempMunicipalities: string[], count: number} => {
+  const tempMunicipalities: string[] = [words[idx]];
   let temp: string = "";
+  let count: number = 1;
 
   for (let i = idx - 1; i >= 0; i--) {
     words[i] = words[i].replace(',', '');
@@ -161,21 +167,27 @@ const collectTempMunicipalities = (words: string[], idx: number): string[] => {
       if (isPartOfVillageName(words[i])) {
         if (didPrevAddressEnd(words[i - 1])) {
           if (temp.length) {
-            result.push(words[i] + " " + temp);
+            tempMunicipalities.push(words[i] + " " + temp);
+            count += 2;
             temp = "";
-          } else result.push(words[i]);
+          } else {
+            tempMunicipalities.push(words[i]);
+            count++;
+          }
         } else {
           if (temp.length) temp = words[i] + " " + temp;
           else temp = words[i];
         }
       } else {
-        if (isConjunction(words[i])) continue;
+        if (isConjunction(words[i])) {
+          count++;
+        }
         else break;
       }
     }
   }
 
-  return result;
+  return { tempMunicipalities, count };
 }
 
 const collectMunicipalities = (tempData: string[], result: string[], province: Province) => {
@@ -192,57 +204,72 @@ const collectMunicipalities = (tempData: string[], result: string[], province: P
 }
 
 const getMunicipalities = (words: string[], idx: number, province: Province): string[] => {
-  const tempMunicipalities: string[] = collectTempMunicipalities(words, idx);
+  const { tempMunicipalities, count } = collectTempMunicipalities(words, idx);
   const municipalities: string[] = [];
   if (tempMunicipalities.length) collectMunicipalities(tempMunicipalities, municipalities, province);
 
+  removeParsedWords(words, idx - count + 1, idx);
   return municipalities;
 }
 
 const areVillages = (word: string): boolean => {
-  return word === "գյուղեր" || word === "գյուղերի" || word === "գյուղերում";
+  return word === "գյուղեր" || word === "գյուղերը" || word === "գյուղերի" || word === "գյուղերում";
+}
+
 }
 
 const areCities = (word: string): boolean => {
-  return word === "քաղաքներ" || word === "քաղաքների" || word === "քաղաքներում";
+  return word === "քաղաքներ" || word === "քաղաքները" || word === "քաղաքները" || word === "քաղաքների" || word === "քաղաքներում";
+}
+const shouldIgnore = (word: string): boolean => {
+  word = word.replace(/[-,ը]/g, '');
+  return !(word.length) || WORDS_TO_IGNORE.has(word);
 }
 
-const collectStreetsAndBuildings = (words: string[], idx: number, province: Province): { addresses: string[], nextMunicipalityIndex: number } => {
-  const addresses: string[] = [];
-  let nextMunicipalityIndex: number = words.length;
+const parseStreetsAndBuildings = (text: string[]): string[] => {
+  const result: string[] = [];
 
-  for (let i = idx + 1; i < words.length; i++) {
-    if (i > idx + 1 && (isVillage(words[i]) || isCity(words[i]) || areVillages(words[i]) || areCities(words[i]))) {
-      nextMunicipalityIndex = i;
-      break;
-    } else {
-
+  for (let i = 0; i < text.length; i++) {
+    if (shouldIgnore(text[i])) {
+      continue;
     }
-  }
+  };
 
-  return { addresses, nextMunicipalityIndex };
+  return text;
+}
+
+const collectStreetsAndBuildings = (words: string[], idx: number, nextIdx: number): string[] => {
+  const addresses: string[] = [];
+
+  const streetsAndBuildings = parseStreetsAndBuildings(words.slice(idx, nextIdx));
+  if (streetsAndBuildings.length) addresses.push(...streetsAndBuildings);
+
+  return addresses;
 }
 
 const collectAddresses = (words: string[], province: Province, announcements: RegionalData) => {
   announcements[province] ??= {};
+  let prevIdx: number = words.length + 1;
 
-  for (let i = 0; i < words.length; i++) {
+  for (let i = words.length - 1; i >= 0; i--) {
     const word = words[i].replace(',', '');
     if (isVillage(word) || isCity(word)) {
       const municipality: string = getMunicipality(words, i, province);
 
       if (announcements[province] && municipality.length) {
         announcements[province][municipality] ??= [];
-        const { addresses, nextMunicipalityIndex } = collectStreetsAndBuildings(words, i, province);
+        const addresses = collectStreetsAndBuildings(words, i, prevIdx);
 
         if (addresses.length) announcements[province][municipality].push(...addresses);
-        i = nextMunicipalityIndex - 1;
+        prevIdx = i;
       }
     } else if (areVillages(word) || areCities(word)) {
       const municipalities: string[] = getMunicipalities(words, i, province);
       if (announcements[province] && municipalities.length) {
         municipalities.forEach(municipality => announcements[province]![municipality] ??= []);
       }
+
+      prevIdx = i;
     }
   };
 }
