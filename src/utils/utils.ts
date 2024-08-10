@@ -3,19 +3,7 @@ import { Province } from "../types/region";
 import { RegionalData, TempRegionalData } from "../types/regional-data";
 
 import { NoDateFoundError, NoProvinceFoundError } from "./errors/errors";
-
-const citiesJson = require("../data/cities.json");
-const villagesJson = require("../data/villages.json");
-
-const jsonToObjWithSets = (json: { [key: string]: string[] }): { [key: string]: Set<string> } => {
-  const result: { [key: string]: Set<string> } = {};
-  for (const key in json) result[key] = new Set(json[key]);
-  return result;
-}
-
-const CITIES: { [key: string]: Set<string> } = jsonToObjWithSets(citiesJson);
-const VILLAGES: { [key: string]: Set<string> } = jsonToObjWithSets(villagesJson);
-const LOWERCASE_VILLAGE_NAMES: Set<string> = new Set(["սովխոզ", "աղբյուր", "կայարան"]);
+import { CITIES, VILLAGES, LOWERCASE_VILLAGE_NAMES, WORDS_TO_IGNORE } from "./constants/constants";
 
 const clearPossessiveSuffix = (word: string): string => {
   let clean = word.replace('-', '');
