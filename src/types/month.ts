@@ -1,4 +1,4 @@
-export enum Month {
+export enum TMonth {
   հունվար = 0,
   փետրվար,
   մարտ,

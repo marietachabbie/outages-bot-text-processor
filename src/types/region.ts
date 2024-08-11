@@ -1,4 +1,4 @@
-export enum Province {
+export enum TProvince {
   Արագածոտն = "Արագածոտն",
   Արարատ = "Արարատ",
   Արմավիր = "Արմավիր",
@@ -12,6 +12,6 @@ export enum Province {
   Տավուշ = "Տավուշ",
 }
 
-export interface Municipality {
+export interface TMunicipality {
   [key: string]: string[],
 }
