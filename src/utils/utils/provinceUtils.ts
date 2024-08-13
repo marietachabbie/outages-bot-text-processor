@@ -2,7 +2,8 @@ import { TProvince } from "../../types/region";
 import { RegionalData, TempRegionalData } from "../../types/regional-data";
 import { NoProvinceFoundError } from "../errors/errors";
 import { stringCleaner } from "./stringCleaner";
-import { addressUtils } from "./addressUtils";
+import { collectAddresses } from "./addressUtils";
+import { booleanUtils } from "./booleanUtils";
 
 export const provinceUtils = {
   getProvince: (word: string): TProvince => {
@@ -46,8 +47,10 @@ export const provinceUtils = {
   processForProvince: (tempData: TempRegionalData, resData: RegionalData) => {
     for (const [province, text] of Object.entries(tempData)) {
       for (const line of text) {
-        const words: string[] = line.split(" ").map(word => word.replace(/[`՝]/g, ''));
-        addressUtils.collectAddresses(words, province as TProvince, resData);
+        const words: string[] = line.split(" ")
+        .filter(word => !(booleanUtils.isHourRange(word.replace('։', ':'))))
+        .map(word => word.replace(/[`՝]/g, ''));
+        collectAddresses(words, province as TProvince, resData);
       }
     }
   },

@@ -6,8 +6,10 @@ import { CITIES, VILLAGES } from "../constants/constants";
 const getStartIndex = (words: string[], idx: number): number => {
   let start: number = idx - 1;
   for (let i = idx - 1; i >= idx - 3; i--) {
-    if (booleanUtils.isNotNumeric(words[i]) && !(words[i].endsWith(',')) && booleanUtils.isPartOfVillageName(words[i])) start = i;
-    else break;
+    if (words[i] && booleanUtils.doesNotContainNumbers(words[i])
+      && !(words[i].endsWith(',')) && booleanUtils.isPartOfVillageName(words[i])) {
+        start = i;
+    } else break;
   }
 
   return start;
@@ -18,7 +20,7 @@ export const municipalityUtils = {
     let municipality: string = "";
     let temp: string = "";
     let start: number = getStartIndex(words, idx);
-  
+
     temp = words.slice(start, idx).join(" ");
     words[idx] = stringCleaner.clearSuffixes(words[idx]);
     if (booleanUtils.isVillage(words[idx])) {
@@ -26,7 +28,7 @@ export const municipalityUtils = {
     } else if (booleanUtils.isCity(words[idx])) {
       if (CITIES[province].has(temp)) municipality = temp + " " + words[idx];
     }
-  
+
     stringCleaner.removeParsedWords(words, start, idx);
     return municipality;
   },
@@ -35,7 +37,7 @@ export const municipalityUtils = {
     const { tempMunicipalities, count } = municipalityUtils.collectTempMunicipalities(words, idx);
     const municipalities: string[] = [];
     if (tempMunicipalities.length) municipalityUtils.collectMunicipalities(tempMunicipalities, municipalities, province);
-  
+
     stringCleaner.removeParsedWords(words, idx - count + 1, idx);
     return municipalities;
   },
@@ -44,10 +46,10 @@ export const municipalityUtils = {
     const tempMunicipalities: string[] = [words[idx]];
     let temp: string = "";
     let count: number = 1;
-  
+
     for (let i = idx - 1; i >= 0; i--) {
       words[i] = words[i].replace(',', '');
-      if (booleanUtils.isNotNumeric(words[i])) {
+      if (booleanUtils.doesNotContainNumbers(words[i])) {
         if (booleanUtils.isPartOfVillageName(words[i])) {
           if (booleanUtils.didPrevAddressEnd(words[i - 1])) {
             if (temp.length) {
@@ -70,13 +72,13 @@ export const municipalityUtils = {
         }
       }
     }
-  
+
     return { tempMunicipalities, count };
   },
 
   collectMunicipalities: (tempData: string[], result: string[], province: TProvince) => {
     const municipalityType: string = stringCleaner.clearPluralSuffix(stringCleaner.clearSuffixes(tempData[0]));
-  
+
     for (let i = 1; i < tempData.length; i++) {
       tempData[i] = tempData[i].replace(',', '');
       if (booleanUtils.isVillage(municipalityType)) {

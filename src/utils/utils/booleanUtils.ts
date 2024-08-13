@@ -22,12 +22,12 @@ export const booleanUtils = {
     return word[0] === word[0].toUpperCase() || LOWERCASE_VILLAGE_NAMES.has(word);
   },
 
-  isNotNumeric: (word: string): boolean => {
+  doesNotContainNumbers: (word: string): boolean => {
     return isNaN(parseInt(word));
   },
 
   didPrevAddressEnd: (word: string): boolean => {
-    return !word || word.endsWith(",") || booleanUtils.isConjunction(word) || !(booleanUtils.isNotNumeric(word));
+    return !word || !word.length || word.endsWith(':') || word.endsWith(',') || booleanUtils.isConjunction(word) || word[0] === word[0].toLowerCase();
   },
 
   isStreet: (word: string): boolean => {
@@ -61,7 +61,7 @@ export const booleanUtils = {
 
   areStreets: (word: string): boolean => {
     word = word.replace(/[.,ը]/g, '');
-    return word === "փողոցներ";
+    return word === "փողոցներ" || word === "փողոցների" || word === "փողոցներում";
   },
 
   areCities: (word: string): boolean => {
@@ -99,7 +99,12 @@ export const booleanUtils = {
   },
 
   shouldIgnore: (word: string): boolean => {
-    word = word.replace(/[-,ը]/g, '');
+    word = word.replace(/[-:,ը]/g, '').trim();
     return !(word.length) || WORDS_TO_IGNORE.has(word);
+  },
+
+  isHourRange: (word: string): boolean => {
+    const regex = /^\d{1,2}:\d{2}-\d{1,2}:\d{2}$/;
+    return regex.test(word);
   },
 };
