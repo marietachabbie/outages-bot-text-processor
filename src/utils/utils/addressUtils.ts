@@ -148,7 +148,7 @@ export const collectAddresses = (words: string[], province: TProvince, announcem
 
   for (let i = words.length - 1; i >= 0; i--) {
     const word = words[i].replace(',', '');
-    if (booleanUtils.isVillage(word) || booleanUtils.isCity(word)) {
+    if (booleanUtils.isVillage(word) || booleanUtils.isCity(word) || booleanUtils.isCommunity(word)) {
       const municipality: string = municipalityUtils.getMunicipality(words, i, province);
 
       if (announcements[province] && municipality.length) {

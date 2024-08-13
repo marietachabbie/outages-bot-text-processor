@@ -14,6 +14,10 @@ export const booleanUtils = {
     return word === "գյուղ" || word === "գյուղը" || word === "գյուղի" || word === "գյուղում";
   },
 
+  isCommunity: (word: string): boolean => {
+    return word === "համայնք" || word === "համայնքը" || word === "համայնքի" || word === "համայնքում";
+  },
+
   isConjunction: (word: string): boolean => {
     return word === 'և' || word === 'եւ' || word === 'ու';
   },

@@ -1,7 +1,7 @@
 import { TProvince } from "../../types/region";
 import { booleanUtils } from "./booleanUtils";
 import { stringCleaner } from "./stringCleaner";
-import { CITIES, VILLAGES } from "../constants/constants";
+import { CITIES, VILLAGES, COMMUNITIES } from "../constants/constants";
 
 const getStartIndex = (words: string[], idx: number): number => {
   let start: number = idx - 1;
@@ -27,6 +27,8 @@ export const municipalityUtils = {
       if (VILLAGES[province].has(temp)) municipality = temp + " " + words[idx];
     } else if (booleanUtils.isCity(words[idx])) {
       if (CITIES[province].has(temp)) municipality = temp + " " + words[idx];
+    } else if (booleanUtils.isCommunity(words[idx])) {
+      if (COMMUNITIES[province].has(temp)) municipality = temp + " " + words[idx];
     }
 
     stringCleaner.removeParsedWords(words, start, idx);

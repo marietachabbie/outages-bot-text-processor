@@ -6,7 +6,7 @@ export const stringCleaner = {
     } else if (clean.endsWith('ու') || clean.endsWith('վա')) {
       clean = clean.slice(0, -2);
     }
-  
+
     return clean;
   },
 
