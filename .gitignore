@@ -128,3 +128,11 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# local testing
+/src/data/input_examples/*
+el_input_file.json
+notes.json
+launch.json
+index.ts
+spell_checker.py
