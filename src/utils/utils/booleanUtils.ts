@@ -23,7 +23,15 @@ export const booleanUtils = {
   },
 
   isPartOfVillageName: (word: string): boolean => {
-    return word[0] === word[0].toUpperCase() || LOWERCASE_VILLAGE_NAMES.has(word);
+    return booleanUtils.startsWithUppercase(word) || LOWERCASE_VILLAGE_NAMES.has(word);
+  },
+
+  isKindergarten: (word: string): boolean => {
+    return word.includes("մանկապարտեզ");
+  },
+
+  isNurserySchool: (word: string): boolean => {
+    return word.includes("մսուր");
   },
 
   doesNotContainNumbers: (word: string): boolean => {
@@ -64,42 +72,37 @@ export const booleanUtils = {
   },
 
   areStreets: (word: string): boolean => {
-    word = word.replace(/[.,ը]/g, '');
-    return word === "փողոցներ" || word === "փողոցների" || word === "փողոցներում";
+    return word.startsWith("փողոցներ");
   },
 
   areCities: (word: string): boolean => {
-    return word === "քաղաքներ" || word === "քաղաքները" || word === "քաղաքները" || word === "քաղաքների" || word === "քաղաքներում";
+    return word.startsWith("քաղաքներ");
   },
 
   areDistricts: (word: string): boolean => {
-    word = word.replace(/[.,ը]/g, '');
-    return word === "թաղամասեր";
+    return word.startsWith("թաղամասեր");
   },
 
-  areHometowns: (word1: string, word2: string): boolean => {
-    word2 = word2.replace(/[,ը]/, '');
+  areHometowns: (word1: string, word2?: string): boolean => {
+    word2 = word2?.replace(/[,ը]/, '') || '';
     return (word2 === "տնակային" || word2 === "տն.") && word1 === "ավաններ";
   },
 
   areHouses: (word: string): boolean => {
-    word = word.replace(/[.,ը]/g, '');
-    return word === "տներ";
+    return word.startsWith("տներ");
   },
 
   areBuildings: (word: string): boolean => {
     word = word.replace(/[.,ը]/g, '');
-    return word === "շենքեր";
+    return word.startsWith("շենքեր");
   },
 
   areOwners: (word: string): boolean => {
-    word = word.toLocaleLowerCase().replace(/[.,ը]/g, '');
-    return word === "սեփականատերեր";
+    return word.toLocaleLowerCase().startsWith("սեփականատերեր");
   },
 
-  isPlural: (word: string): boolean => {
-    word = word.replace(/[.,]/g, '');
-    return word.endsWith("եր");
+  areKindergartens: (word: string): boolean => {
+    return word.includes("մանկապարտեզներ");
   },
 
   shouldIgnore: (word: string): boolean => {
@@ -110,5 +113,9 @@ export const booleanUtils = {
   isHourRange: (word: string): boolean => {
     const regex = /^\d{1,2}:\d{2}-\d{1,2}:\d{2}$/;
     return regex.test(word);
+  },
+
+  startsWithUppercase: (word: string): boolean => {
+    return word[0] === word[0].toUpperCase();
   },
 };

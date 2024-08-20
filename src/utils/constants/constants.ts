@@ -12,4 +12,8 @@ export const CITIES: { [key: string]: Set<string> } = jsonToObjWithSets(citiesJs
 export const VILLAGES: { [key: string]: Set<string> } = jsonToObjWithSets(villagesJson);
 export const COMMUNITIES: { [key: string]: Set<string> } = jsonToObjWithSets(communitiesJson);
 export const LOWERCASE_VILLAGE_NAMES: Set<string> = new Set(["սովխոզ", "աղբյուր", "կայարան"]);
-export const WORDS_TO_IGNORE = new Set([""]);
+export const WORDS_TO_IGNORE = new Set<string>([
+  "թիվ",
+  "մասնակի",
+  "ամբողջությամբ",
+]);
