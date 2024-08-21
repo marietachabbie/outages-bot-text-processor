@@ -30,6 +30,10 @@ export const booleanUtils = {
     return word.includes("մանկապարտեզ");
   },
 
+  isSchool: (word: string): boolean => {
+    return word.includes("դպրոց"); // TODO
+  },
+
   isNurserySchool: (word: string): boolean => {
     return word.includes("մսուր");
   },
@@ -39,7 +43,8 @@ export const booleanUtils = {
   },
 
   didPrevAddressEnd: (word: string): boolean => {
-    return !word || !word.length || word.endsWith(':') || word.endsWith(',') || booleanUtils.isConjunction(word) || word[0] === word[0].toLowerCase();
+    const punctuationRegex = /^[\p{P}\p{S}]$/u;
+    return !word || !word.length || word.endsWith(':') || word.endsWith(',') || booleanUtils.isConjunction(word) || (!punctuationRegex.test(word[0]) && word[0] === word[0].toLowerCase());
   },
 
   isStreet: (word: string): boolean => {
@@ -105,6 +110,10 @@ export const booleanUtils = {
     return word.includes("մանկապարտեզներ");
   },
 
+  areSchools: (word: string): boolean => {
+    return word.includes("դպրոցներ");
+  },
+
   shouldIgnore: (word: string): boolean => {
     word = word.replace(/[-:,ը]/g, '').trim();
     return !(word.length) || WORDS_TO_IGNORE.has(word);
@@ -116,6 +125,14 @@ export const booleanUtils = {
   },
 
   startsWithUppercase: (word: string): boolean => {
-    return word[0] === word[0].toUpperCase();
+    return !!word && word[0] === word[0].toUpperCase();
+  },
+
+  startsWithQuote: (word: string): boolean => {
+    return word.startsWith('«');
+  },
+
+  endsWithQuote: (word: string): boolean => {
+    return word.endsWith('»');
   },
 };

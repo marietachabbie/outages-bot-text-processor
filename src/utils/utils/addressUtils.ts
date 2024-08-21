@@ -46,6 +46,7 @@ const collectInfrastructureNames = (text: string[], idx: number, result: string[
       } else if (booleanUtils.isConjunction(text[i])) {
         continue;
       } else {
+        nextIdx = i + 1;
         break;
       }
     } else {
@@ -85,8 +86,72 @@ const collectBinarInfrastructures = (text: string[], result: string[], isRequire
   }
 }
 
-const collectOwners = (text: string[], result: string[]) => {
+const getStartOfOwnersList = (text: string[], idx: number): number => {
+  let start: number = 0;
 
+  for (let i = idx - 1; i >= 0; i--) {
+    if (booleanUtils.startsWithQuote(text[i])) {
+      start = i;
+    } else if (booleanUtils.endsWithQuote(text[i]) || booleanUtils.startsWithQuote(text[i - 1])) {
+      continue;
+    } else {
+      break;
+    }
+  }
+
+  return start;
+}
+
+const collectOwnerNames = (text: string[], start: number, end: number, result: string[]): number[] => {
+  const owner: string = "սեփականատեր";
+  const ownerNames: string[] = [];
+  const tempName: string[] = [];
+  let firstIdx: number = -1;
+  let lastIdx: number = -1;
+
+  for (let i = start; i <= end; i++) {
+    text[i] = text[i].replace(',', '');
+    if (booleanUtils.startsWithQuote(text[i]) && booleanUtils.endsWithQuote(text[i])) {
+      ownerNames.push(text[i]);
+      if (firstIdx === -1) firstIdx = i;
+      lastIdx = i;
+    } else if (booleanUtils.startsWithQuote(text[i])) {
+      tempName.push(text[i]);
+      if (firstIdx === -1) firstIdx = i;
+    } else if (booleanUtils.endsWithQuote(text[i])) {
+      if (!text[i].endsWith(',') && !booleanUtils.startsWithQuote(text[i + 1]) && booleanUtils.startsWithUppercase(text[i + 1])) {
+        break
+      } else {
+        tempName.push(text[i]);
+      }
+
+      ownerNames.push(tempName.join(' '));
+      lastIdx = Math.max(i, lastIdx);
+      tempName.length = 0;
+    } else if (booleanUtils.startsWithUppercase(text[i])) {
+      tempName.push(text[i]);
+    } else {
+      break;
+    }
+  }
+
+  for (const name of ownerNames) result.push(name + ' ' + owner);
+  return [firstIdx, lastIdx];
+}
+
+const collectOwners = (text: string[], result: string[]) => {
+  for (let i = 0; i < text.length; i++) {
+    if (booleanUtils.areOwners(text[i])) {
+      if (booleanUtils.didPrevAddressEnd(text[i - 1])) {
+        const [firstIdx, lastIdx] = collectOwnerNames(text, i + 1, text.length - 1, result);
+        if (lastIdx >= 0) stringCleaner.removeParsedWords(text, i, lastIdx);
+      } else {
+        const startIndex: number = getStartOfOwnersList(text, i);
+        const [firstIdx, lastIdx] = collectOwnerNames(text, startIndex, i - 1, result);
+        if (firstIdx >= 0) stringCleaner.removeParsedWords(text, firstIdx, i);
+      }
+    }
+  }
 }
 
 const collectPluralKindergartens = (text: string[], result: string[]) => {
@@ -115,19 +180,12 @@ const collectPluralKindergartens = (text: string[], result: string[]) => {
   }
 }
 
-
-}
-
-const collectPluralEducationalFacilities = (text: string[], result: string[]) => {
-  collectPluralKindergartens(text, result);
-  collectPluralSchools(text, result);
-}
-
 const parsePluralIndependents = (text: string[], result: string[]) => {
   collectInfrastructures(text, result, booleanUtils.areStreets, "փողոց");
   collectInfrastructures(text, result, booleanUtils.areDistricts, "թաղամաս");
   collectBinarInfrastructures(text, result, booleanUtils.areHometowns, "տնակային ավան");
-  collectPluralEducationalFacilities(text, result);
+  collectPluralKindergartens(text, result);
+  collectInfrastructures(text, result, booleanUtils.areSchools, "դպրոց");
   collectOwners(text, result);
 }
 
