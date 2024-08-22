@@ -4,6 +4,18 @@ import { booleanUtils } from "./booleanUtils";
 import { municipalityUtils } from "./municipalityUtils";
 import { stringCleaner } from "./stringCleaner";
 
+import { INFRASTRUCTURES } from "../constants/constants";
+const {
+  DISTRICT,
+  STREET,
+  LANE,
+  OWNER,
+  HOMETOWN,
+  KINDERGARTEN,
+  SCHOOL,
+  NURSERY,
+} = INFRASTRUCTURES;
+
 const collectInfrastructureNames = (text: string[], idx: number, result: string[], infrastructure: string): number => {
   const tempName: string[] = [];
   const tempNumbers: number[] = [];
@@ -102,7 +114,6 @@ const getStartOfOwnersList = (text: string[], idx: number): number => {
 }
 
 const collectOwnerNames = (text: string[], start: number, end: number, result: string[]): number[] => {
-  const owner: string = "սեփականատեր";
   const ownerNames: string[] = [];
   const tempName: string[] = [];
   let firstIdx: number = -1;
@@ -134,7 +145,7 @@ const collectOwnerNames = (text: string[], start: number, end: number, result: s
     }
   }
 
-  for (const name of ownerNames) result.push(name + ' ' + owner);
+  for (const name of ownerNames) result.push(name + ' ' + OWNER);
   return [firstIdx, lastIdx];
 }
 
@@ -154,8 +165,6 @@ const collectOwners = (text: string[], result: string[]) => {
 }
 
 const collectPluralKindergartens = (text: string[], result: string[]) => {
-  const KINDERGARTEN: string = "մանկապարտեզ";
-  const NURSERY: string = "մսուր";
   let idx: number = text.length - 1;
   let infrastructure: string = "";
 
@@ -180,9 +189,6 @@ const collectPluralKindergartens = (text: string[], result: string[]) => {
 }
 
 const collectLanes = (text: string[], result: string[], idx: number): number => {
-  const LANE: string = "նրբանցք";
-  const STREET: string = "փողոց";
-
   const tempLanes: string[] = [];
   const streetName: string[] = [];
   let hasStreetName: boolean = false;
@@ -239,24 +245,16 @@ const collectPluralLanes = (text: string[], result: string[]) => {
 }
 
 const parsePluralIndependents = (text: string[], result: string[]) => {
-  collectInfrastructures(text, result, booleanUtils.areStreets, "փողոց");
-  collectInfrastructures(text, result, booleanUtils.areDistricts, "թաղամաս");
-  collectBinarInfrastructures(text, result, booleanUtils.areHometowns, "տնակային ավան");
+  collectInfrastructures(text, result, booleanUtils.areStreets, STREET);
+  collectInfrastructures(text, result, booleanUtils.areDistricts, DISTRICT);
+  collectBinarInfrastructures(text, result, booleanUtils.areHometowns, HOMETOWN);
   collectPluralKindergartens(text, result);
-  collectInfrastructures(text, result, booleanUtils.areSchools, "դպրոց");
+  collectInfrastructures(text, result, booleanUtils.areSchools, SCHOOL);
   collectPluralLanes(text, result);
   collectOwners(text, result);
 }
 
 const parseStreetsAndProperties = (text: string[], result: string[]) => {
-  text.forEach((word, i) => {
-    if (!(booleanUtils.shouldIgnore(word))) {
-
-    }
-  })
-}
-
-const parseEducationalFacilities = (text: string[], result: string[]) => {
   text.forEach((word, i) => {
     if (!(booleanUtils.shouldIgnore(word))) {
 

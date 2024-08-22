@@ -12,8 +12,44 @@ export const CITIES: { [key: string]: Set<string> } = jsonToObjWithSets(citiesJs
 export const VILLAGES: { [key: string]: Set<string> } = jsonToObjWithSets(villagesJson);
 export const COMMUNITIES: { [key: string]: Set<string> } = jsonToObjWithSets(communitiesJson);
 export const LOWERCASE_VILLAGE_NAMES: Set<string> = new Set(["սովխոզ", "աղբյուր", "կայարան"]);
+
 export const WORDS_TO_IGNORE = new Set<string>([
   "թիվ",
   "մասնակի",
   "ամբողջությամբ",
 ]);
+
+export const PROVINCES = {
+  PROVINCE: "մարզ",
+  YEREVAN: "Երևան",
+  LORI: "Լոռի",
+  VAYOTS: "Վայոց",
+  DZOR: "Ձոր",
+};
+
+export const INFRASTRUCTURES = {
+  VILLAGE: "գյուղ",
+  VILLAGES: "գյուղեր",
+  COMMUNITY: "համայնք",
+  CITY: "քաղաք",
+  CITIES: "քաղաքներ",
+  DISTRICT: "թաղամաս",
+  DISTRICTS: "թաղամասեր",
+  STREET: "փողոց",
+  STREETS: "փողոցներ",
+  LANE: "նրբանցք",
+  LANES: "նրբանցքներ",
+  HOUSE: "տուն",
+  HOUSES: "տներ",
+  BUILDING: "շենք",
+  BUILDINGS: "շենքեր",
+  OWNER: "սեփականատեր",
+  OWNERS: "սեփականատերեր",
+  HOMETOWN: "տնակային ավան",
+  HOMETOWNS: "տնակային ավաններ",
+  KINDERGARTEN: "մանկապարտեզ",
+  KINDERGARTENS: "մանկապարտեզներ",
+  SCHOOL: "դպրոց",
+  SCHOOLS: "դպրոցներ",
+  NURSERY: "մսուր",
+}

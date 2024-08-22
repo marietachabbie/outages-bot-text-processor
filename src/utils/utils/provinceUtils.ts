@@ -5,13 +5,22 @@ import { stringCleaner } from "./stringCleaner";
 import { collectAddresses } from "./addressUtils";
 import { booleanUtils } from "./booleanUtils";
 
+import { PROVINCES } from "../constants/constants";
+const {
+  PROVINCE,
+  YEREVAN,
+  LORI,
+  VAYOTS,
+  DZOR,
+} = PROVINCES;
+
 export const provinceUtils = {
   getProvince: (word: string): TProvince => {
     let cleanWord: string = stringCleaner.clearPossessiveSuffix(word);
-    if (cleanWord === "Լոռ") {
-      cleanWord = "Լոռի";
-    } else if (cleanWord === "Ձոր") {
-      cleanWord = "Վայոց Ձոր";
+    if (cleanWord === LORI.slice(0, 3)) {
+      cleanWord = LORI;
+    } else if (cleanWord === DZOR) {
+      cleanWord = VAYOTS + ' ' + DZOR;
     }
   
     if (cleanWord in TProvince) return TProvince[cleanWord as keyof typeof TProvince];
@@ -30,13 +39,13 @@ export const provinceUtils = {
       words.forEach((word, i) => {
         word = stringCleaner.clearSuffixes(word);
   
-        if (word === "Երևան" || word === "մարզ") {
-          if (word === "Երևան") province = TProvince[word];
-          else if (word === "մարզ") province = provinceUtils.getProvince(words[i - 1]);
+        if (word === YEREVAN || word === PROVINCE) {
+          if (word === YEREVAN) province = TProvince[word as keyof typeof TProvince];
+          else if (word === PROVINCE) province = provinceUtils.getProvince(words[i - 1]);
           line = '';
         }
       })
-  
+
       if (province) {
         data[province] ??= [];
         if (line.length) data[province]?.push(line);
