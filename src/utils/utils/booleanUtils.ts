@@ -38,6 +38,11 @@ export const booleanUtils = {
     return word.includes("մսուր");
   },
 
+  isLane: (word: string): boolean => {
+    word = word.replace(/[.,ը]/g, '');
+    return word === "նրբանցք" || word === "նրբանցքի";
+  },
+
   doesNotContainNumbers: (word: string): boolean => {
     return isNaN(parseInt(word));
   },
@@ -62,10 +67,6 @@ export const booleanUtils = {
     return word === "տուն" || word === "տ";
   },
 
-  areVillages: (word: string): boolean => {
-    return word === "գյուղեր" || word === "գյուղերը" || word === "գյուղերի" || word === "գյուղերում";
-  },
-
   isBuilding: (word: string): boolean => {
     word = word.replace(/[.,ը]/g, '');
     return word === "շենք" || word === "շ";
@@ -74,6 +75,10 @@ export const booleanUtils = {
   isOwner: (word: string): boolean => {
     word = word.toLocaleLowerCase().replace(/[.,ը]/g, '');
     return word === "սեփականատեր";
+  },
+
+  areVillages: (word: string): boolean => {
+    return word === "գյուղեր" || word === "գյուղերը" || word === "գյուղերի" || word === "գյուղերում";
   },
 
   areStreets: (word: string): boolean => {
@@ -114,6 +119,10 @@ export const booleanUtils = {
     return word.includes("դպրոցներ");
   },
 
+  areLanes: (word: string): boolean => {
+    return word.startsWith("նրբանցքներ");
+  },
+
   shouldIgnore: (word: string): boolean => {
     word = word.replace(/[-:,ը]/g, '').trim();
     return !(word.length) || WORDS_TO_IGNORE.has(word);
@@ -122,6 +131,16 @@ export const booleanUtils = {
   isHourRange: (word: string): boolean => {
     const regex = /^\d{1,2}:\d{2}-\d{1,2}:\d{2}$/;
     return regex.test(word);
+  },
+
+  isOrdinalNumber: (word: string): boolean => {
+    const ordinalNumbersRegex = /\d[-–](?:ին|րդ)/;
+    return ordinalNumbersRegex.test(word);
+  },
+
+  isNumeric: (word: string): boolean => {
+    const numbersRegex = /^\d+$/;
+    return numbersRegex.test(word);
   },
 
   startsWithUppercase: (word: string): boolean => {

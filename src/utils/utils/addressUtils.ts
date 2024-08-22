@@ -50,12 +50,11 @@ const collectInfrastructureNames = (text: string[], idx: number, result: string[
         break;
       }
     } else {
-      const numbersRegex = /^\d+$/;
-      if (numbersRegex.test(text[i])) {
+      if (booleanUtils.isNumeric(text[i])) {
         tempNumbers.push(parseInt(text[i]));
       } else {
         const parts: string[] = text[i].split('-');
-        if (parts.length === 2 && numbersRegex.test(parts[0]) && numbersRegex.test(parts[1])) {
+        if (parts.length === 2 && booleanUtils.isNumeric(parts[0]) && booleanUtils.isNumeric(parts[1])) {
           for (let i = parseInt(parts[0]); i <= parseInt(parts[1]); i++) {
             tempNumbers.push(i);
           }
@@ -180,21 +179,73 @@ const collectPluralKindergartens = (text: string[], result: string[]) => {
   }
 }
 
+const collectLanes = (text: string[], result: string[], idx: number): number => {
+  const LANE: string = "նրբանցք";
+  const STREET: string = "փողոց";
+
+  const tempLanes: string[] = [];
+  const streetName: string[] = [];
+  let hasStreetName: boolean = false;
+  let nextIdx: number = -1;
+
+  for (let i = idx - 1; i >= 0; i--) {
+    if (!text[i].endsWith(',')) {
+      if (booleanUtils.isOrdinalNumber(text[i])) {
+        if (hasStreetName) streetName.push(text[i]);
+        else tempLanes.push(text[i]);
+        nextIdx = i;
+      } else if (booleanUtils.isStreet(text[i])) {
+        hasStreetName = true;
+      } else if (booleanUtils.startsWithUppercase(text[i])) {
+        streetName.push(text[i]);
+        nextIdx = i;
+      } else if (booleanUtils.isNumeric(text[i])) {
+        if (hasStreetName) streetName.push(text[i]);
+        else tempLanes.push(text[i]);
+        nextIdx = i;
+      } else if (booleanUtils.isConjunction(text[i])) {
+        continue;
+      } else {
+        break;
+      }
+    } else {
+      break;
+    }
+  }
+
+  if (tempLanes.length) {
+    if (hasStreetName && streetName.length) {
+      const strName: string = streetName.reverse().join(' ');
+      for (const lane of tempLanes) result.push(strName + ' ' + STREET + ' ' + lane + ' ' + LANE);
+    } else if (streetName.length) {
+      const strName: string = streetName.reverse().join(' ');
+      for (const lane of tempLanes) result.push(strName + ' ' + lane + ' ' + LANE);
+    } else {
+      for (const lane of tempLanes) result.push(lane + ' ' + LANE);
+    }
+  }
+
+  if (nextIdx >= 0) stringCleaner.removeParsedWords(text, nextIdx, idx);
+  return nextIdx;
+}
+
+const collectPluralLanes = (text: string[], result: string[]) => {
+  for (let i = text.length - 1; i >= 0; i--) {
+    if (booleanUtils.areLanes(text[i])) {
+      const nextIdx: number = collectLanes(text, result, i);
+      i = nextIdx + 1;
+    }
+  }
+}
+
 const parsePluralIndependents = (text: string[], result: string[]) => {
   collectInfrastructures(text, result, booleanUtils.areStreets, "փողոց");
   collectInfrastructures(text, result, booleanUtils.areDistricts, "թաղամաս");
   collectBinarInfrastructures(text, result, booleanUtils.areHometowns, "տնակային ավան");
   collectPluralKindergartens(text, result);
   collectInfrastructures(text, result, booleanUtils.areSchools, "դպրոց");
+  collectPluralLanes(text, result);
   collectOwners(text, result);
-}
-
-const parseIndependentLanes = (text: string[], result: string[]) => {
-  text.forEach((word, i) => {
-    if (!(booleanUtils.shouldIgnore(word))) {
-
-    }
-  })
 }
 
 const parseStreetsAndProperties = (text: string[], result: string[]) => {
@@ -217,9 +268,8 @@ const parseAdresses = (text: string[]): string[] => {
   const result: string[] = [];
 
   parsePluralIndependents(text, result);
-  parseIndependentLanes(text, result);
   parseStreetsAndProperties(text, result);
-  parseEducationalFacilities(text, result);
+  parseEducationalFacilities(text, result); // singulars (rename)
 
   console.log("🚀 ~ text:", text);
   return result;
