@@ -4,8 +4,10 @@ import { NoProvinceFoundError } from "../errors/errors";
 import { stringCleaner } from "./stringCleaner";
 import { collectAddresses } from "./addressUtils";
 import { booleanUtils } from "./booleanUtils";
-
 import { PROVINCES } from "../constants/constants";
+import { INFRASTRUCTURES } from "../constants/constants";
+
+const { CITY } = INFRASTRUCTURES;
 const {
   PROVINCE,
   YEREVAN,
@@ -55,10 +57,11 @@ export const provinceUtils = {
 
   processForProvince: (tempData: TempRegionalData, resData: RegionalData) => {
     for (const [province, text] of Object.entries(tempData)) {
-      for (const line of text) {
+      for (let line of text) {
+      if (province === YEREVAN) line = YEREVAN + ' ' + CITY + ' ' + line;
         const words: string[] = line.split(" ")
-        .filter(word => !(booleanUtils.isHourRange(word.replace('։', ':'))))
-        .map(word => word.replace(/[`՝]/g, ''));
+          .filter(word => !(booleanUtils.isHourRange(word.replace('։', ':'))))
+          .map(word => word.replace(/[`՝]/g, ''));
         collectAddresses(words, province as TProvince, resData);
       }
     }
