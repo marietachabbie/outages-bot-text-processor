@@ -27,7 +27,22 @@ const {
 } = INFRASTRUCTURES;
 
 export const booleanUtils = {
-  inFuture: (date: Date): boolean => {
+  isHourRange: (word: string): boolean => {
+    const regex = /^\d{1,2}:\d{2}-\d{1,2}:\d{2}$/;
+    return regex.test(word);
+  },
+
+  isOrdinalNumber: (word: string): boolean => {
+    const ordinalNumbersRegex = /\d[-–](?:ին|րդ)/;
+    return ordinalNumbersRegex.test(word);
+  },
+
+  isNumeric: (word: string): boolean => {
+    const numbersRegex = /^\d+$/;
+    return numbersRegex.test(word);
+  },
+
+  isInFuture: (date: Date): boolean => {
     const now: Date = new Date();
     return date >= now;
   },
@@ -67,15 +82,6 @@ export const booleanUtils = {
   isLane: (word: string): boolean => {
     word = word.replace(/[.,ը]/g, '');
     return word === LANE || word === LANE + "ի";
-  },
-
-  doesNotContainNumbers: (word: string): boolean => {
-    return isNaN(parseInt(word));
-  },
-
-  didPrevAddressEnd: (word: string): boolean => {
-    const punctuationRegex = /^[\p{P}\p{S}]$/u;
-    return !word || !word.length || word.endsWith(':') || word.endsWith(',') || booleanUtils.isConjunction(word) || (!punctuationRegex.test(word[0]) && word[0] === word[0].toLowerCase());
   },
 
   isStreet: (word: string): boolean => {
@@ -155,21 +161,6 @@ export const booleanUtils = {
     return !(word.length) || WORDS_TO_IGNORE.has(word);
   },
 
-  isHourRange: (word: string): boolean => {
-    const regex = /^\d{1,2}:\d{2}-\d{1,2}:\d{2}$/;
-    return regex.test(word);
-  },
-
-  isOrdinalNumber: (word: string): boolean => {
-    const ordinalNumbersRegex = /\d[-–](?:ին|րդ)/;
-    return ordinalNumbersRegex.test(word);
-  },
-
-  isNumeric: (word: string): boolean => {
-    const numbersRegex = /^\d+$/;
-    return numbersRegex.test(word);
-  },
-
   startsWithUppercase: (word: string): boolean => {
     return !!word && word[0] === word[0].toUpperCase();
   },
@@ -180,5 +171,14 @@ export const booleanUtils = {
 
   endsWithQuote: (word: string): boolean => {
     return word.endsWith('»');
+  },
+
+  doesNotContainNumbers: (word: string): boolean => {
+    return isNaN(parseInt(word));
+  },
+
+  didPrevAddressEnd: (word: string): boolean => {
+    const punctuationRegex = /^[\p{P}\p{S}]$/u;
+    return !word || !word.length || word.endsWith(':') || word.endsWith(',') || booleanUtils.isConjunction(word) || (!punctuationRegex.test(word[0]) && word[0] === word[0].toLowerCase());
   },
 };

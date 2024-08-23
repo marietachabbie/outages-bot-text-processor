@@ -13,7 +13,7 @@ const generateStructuredAnnouncement = (text: string[]): RegionalData => {
   const res: RegionalData = {};
   const date: Date = dateUtils.getDate(text[0]);
 
-  if (booleanUtils.inFuture(date)) {
+  if (booleanUtils.isInFuture(date)) {
     buildAnnouncement(text, res);
   }
 
