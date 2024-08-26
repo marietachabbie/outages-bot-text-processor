@@ -16,8 +16,10 @@ export const stringCleaner = {
       clean = clean.slice(0, -1);
     } else if (clean.endsWith('ում')) {
       clean = clean.slice(0, -3);
+    } else if (clean.endsWith('ուղու')) {
+      clean = clean.replace('ուղու', 'ուղի')
     }
-  
+
     return clean;
   },
 

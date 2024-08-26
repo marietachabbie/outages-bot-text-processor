@@ -8,6 +8,7 @@ const {
   CITIES,
   DISTRICT,
   DISTRICTS,
+  AVENUE,
   STREET,
   STREETS,
   LANE,
@@ -24,12 +25,18 @@ const {
   SCHOOL,
   SCHOOLS,
   NURSERY,
+  PRIVATE,
 } = INFRASTRUCTURES;
 
 export const booleanUtils = {
   isHourRange: (word: string): boolean => {
     const regex = /^\d{1,2}:\d{2}-\d{1,2}:\d{2}$/;
     return regex.test(word);
+  },
+
+  isPlural: (word: string): boolean => {
+    word = word.replace(/[.,ը]/g, '');
+    return word.endsWith("եր");
   },
 
   isOrdinalNumber: (word: string): boolean => {
@@ -81,12 +88,17 @@ export const booleanUtils = {
 
   isLane: (word: string): boolean => {
     word = word.replace(/[.,ը]/g, '');
-    return word === LANE || word === LANE + "ի";
+    return word === LANE || word === LANE.slice(0, 3) ||word === LANE + "ի";
   },
 
   isStreet: (word: string): boolean => {
     word = word.replace(/[.,ը]/g, '');
     return word === STREET || word === STREET.slice(0, 3) || word === STREET[0];
+  },
+
+  isAvenue: (word: string): boolean => {
+    word = word.replace(/[.,ը]/g, '');
+    return word === AVENUE || word === AVENUE.slice(0, 3) || word === AVENUE[0];
   },
 
   isDistrict: (word: string): boolean => {
@@ -132,11 +144,10 @@ export const booleanUtils = {
   },
 
   areHouses: (word: string): boolean => {
-    return word.startsWith(HOUSES);
+    return word.includes(HOUSES);
   },
 
   areBuildings: (word: string): boolean => {
-    word = word.replace(/[.,ը]/g, '');
     return word.startsWith(BUILDINGS);
   },
 
@@ -154,6 +165,10 @@ export const booleanUtils = {
 
   areLanes: (word: string): boolean => {
     return word.startsWith(LANES);
+  },
+
+  arePrivateHouses: (word1: string, word2?: string): boolean => {
+    return booleanUtils.areHouses(word1) && word2 === PRIVATE;
   },
 
   shouldIgnore: (word: string): boolean => {
@@ -175,6 +190,11 @@ export const booleanUtils = {
 
   doesNotContainNumbers: (word: string): boolean => {
     return isNaN(parseInt(word));
+  },
+
+  doesContainNumbers: (word: string): boolean => {
+    const digitsRegex = /\d/;
+    return digitsRegex.test(word);
   },
 
   didPrevAddressEnd: (word: string): boolean => {

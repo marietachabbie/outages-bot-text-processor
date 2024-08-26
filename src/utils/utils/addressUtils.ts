@@ -8,17 +8,22 @@ import { INFRASTRUCTURES } from "../constants/constants";
 const {
   DISTRICT,
   STREET,
+  AVENUE,
   LANE,
+  HOUSE,
+  HOUSES,
+  BUILDING,
   OWNER,
   HOMETOWN,
   KINDERGARTEN,
   SCHOOL,
   NURSERY,
+  PRIVATE,
 } = INFRASTRUCTURES;
 
 const collectInfrastructureNames = (text: string[], idx: number, result: string[], infrastructure: string): number => {
   const tempName: string[] = [];
-  const tempNumbers: number[] = [];
+  const tempNumbers: string[] = [];
   let nextIdx: number = -1;
 
   for (let i = idx - 1; i >= 0; i--) {
@@ -62,16 +67,7 @@ const collectInfrastructureNames = (text: string[], idx: number, result: string[
         break;
       }
     } else {
-      if (booleanUtils.isNumeric(text[i])) {
-        tempNumbers.push(parseInt(text[i]));
-      } else {
-        const parts: string[] = text[i].split('-');
-        if (parts.length === 2 && booleanUtils.isNumeric(parts[0]) && booleanUtils.isNumeric(parts[1])) {
-          for (let i = parseInt(parts[0]); i <= parseInt(parts[1]); i++) {
-            tempNumbers.push(i);
-          }
-        }
-      }
+      collectNumericProperties(text[i], tempNumbers);
     }
   }
 
@@ -254,12 +250,139 @@ const parsePluralIndependents = (text: string[], result: string[]) => {
   collectOwners(text, result);
 }
 
-const parseStreetsAndProperties = (text: string[], result: string[]) => {
-  text.forEach((word, i) => {
-    if (!(booleanUtils.shouldIgnore(word))) {
+const parseStreetName = (text: string[], idx: number, streetName: string[]) => {
+  let prevIdx: number = -1;
 
+  for (let i = idx - 1; i >= 0; i--) {
+    if (!text[i].endsWith(',') && text[i].length && !booleanUtils.isConjunction(text[i])) {
+      streetName.push(text[i]);
+      prevIdx = i;
+    } else {
+      prevIdx = i;
+      break;
     }
-  })
+  }
+
+  if (prevIdx >= 0) stringCleaner.removeParsedWords(text, prevIdx + 1, idx);
+}
+
+const getInfrastructureType = (text: string[], idx: number): string => {
+  text[idx] = text[idx].replace(/[,:ը]/, '');
+  let result: string = "";
+  if (booleanUtils.areBuildings(text[idx])) {
+    result = BUILDING;
+  } else if (booleanUtils.areHouses(text[idx])) {
+    if (booleanUtils.arePrivateHouses(text[idx], text[idx - 1])) {
+      result = PRIVATE + ' ' + HOUSE;
+    } else {
+      result = text[idx].replace(HOUSES, HOUSE);
+    }
+  }
+
+  return result;
+}
+
+const collectNumericProperties = (word: string, numbers: string[]) => {
+  word = word.replace(',', '');
+  if (booleanUtils.doesContainNumbers(word)) {
+    if (word.includes('-')) {
+      const parts: string[] = word.split('-');
+      if (parts.length === 2) {
+        for (let i = parseInt(parts[0]); i <= parseInt(parts[1]); i++) {
+          numbers.push(i.toString());
+        }
+
+        if (numbers[numbers.length - 1] !== parts[1]) numbers.push(parts[1]);
+      }
+    } else {
+      numbers.push(word);
+    }
+  }
+}
+
+const collectMultipleProperties = (text: string[], start: number, end: number, properties: string[]) => {
+  const infrastructure: string = getInfrastructureType(text, end);
+  const propNumbers: string[] = [];
+  for (let i = start; i < end; i++) {
+    if (!booleanUtils.isConjunction(text[i])) collectNumericProperties(text[i], propNumbers);
+  }
+
+  for (const num of propNumbers) properties.push(num + ' ' + infrastructure);
+}
+
+const collectSingleProperty = (text: string[], start: number, end: number, properties: string[]) => {
+  text[start] = text[start].replace(',', '');
+  const infrastructure: string = stringCleaner.clearSuffixes(text[end]);
+  if (booleanUtils.doesContainNumbers(text[start])) properties.push(text[start] + ' ' + infrastructure);
+}
+
+const parseProperties = (text: string[], idx: number, properties: string[]): number => {
+  let nextIdx: number = -1;
+  let wordIdx: number = -1;
+  let isPlural: boolean = false;
+
+  for (let i = idx + 1; i < text.length; i++) {
+    if (booleanUtils.shouldIgnore(text[i])) {
+      continue;
+    } else {
+      if (booleanUtils.doesNotContainNumbers(text[i].replace(',', ''))) {
+        nextIdx = i;
+        if (booleanUtils.isPlural(text[i])) {
+          isPlural = true;
+          wordIdx = i;
+          break;
+        } else {
+          wordIdx = i;
+          break;
+        }
+      }
+    }
+  }
+
+  if (wordIdx >= 0) {
+    if (!isPlural) {
+      collectSingleProperty(text, idx + 1, wordIdx, properties);
+    } else {
+      if (booleanUtils.areBuildings(text[wordIdx]) || booleanUtils.areHouses(text[wordIdx])) {
+        collectMultipleProperties(text, idx + 1, wordIdx, properties);
+      }
+    }
+  }
+
+  if (nextIdx >= 0) stringCleaner.removeParsedWords(text, idx, nextIdx);
+  return nextIdx;
+}
+
+const getStreetType = (word: string): string => {
+  if (booleanUtils.isStreet(word)) return STREET;
+  else if (booleanUtils.isAvenue(word)) return AVENUE;
+  else return "(temp) Something is wrong";
+}
+
+const parseStreetsAndProperties = (text: string[], result: string[]) => {
+  const streetName: string[] = [];
+  const properties: string[] = [];
+
+  for (let i = 0; i < text.length; i++) {
+    if (booleanUtils.isStreet(text[i]) || booleanUtils.isAvenue(text[i])) {
+      streetName.push(getStreetType(text[i]));
+      parseStreetName(text, i, streetName);
+      const nextIdx: number = parseProperties(text, i, properties);
+
+      if (streetName.length) {
+        const street: string = streetName.reverse().join(' ');
+        streetName.length = 0;
+        if (properties.length) {
+          for (const property of properties) result.push(street + ' ' + property);
+          properties.length = 0;
+        } else {
+          result.push(street);
+        }
+      }
+
+      if (nextIdx >= 0) i = nextIdx;
+    }
+  }
 }
 
 const parseAdresses = (text: string[]): string[] => {
@@ -269,7 +392,6 @@ const parseAdresses = (text: string[]): string[] => {
   parseStreetsAndProperties(text, result);
   parseEducationalFacilities(text, result); // singulars (rename)
 
-  console.log("🚀 ~ text:", text);
   return result;
 }
 

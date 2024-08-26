@@ -35,6 +35,7 @@ export const INFRASTRUCTURES = {
   CITIES: "քաղաքներ",
   DISTRICT: "թաղամաս",
   DISTRICTS: "թաղամասեր",
+  AVENUE: "պողոտա",
   STREET: "փողոց",
   STREETS: "փողոցներ",
   LANE: "նրբանցք",
@@ -52,4 +53,5 @@ export const INFRASTRUCTURES = {
   SCHOOL: "դպրոց",
   SCHOOLS: "դպրոցներ",
   NURSERY: "մսուր",
+  PRIVATE: "սեփական",
 }
