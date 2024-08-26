@@ -58,10 +58,10 @@ export const provinceUtils = {
   processForProvince: (tempData: TempRegionalData, resData: RegionalData) => {
     for (const [province, text] of Object.entries(tempData)) {
       for (let line of text) {
-      if (province === YEREVAN) line = YEREVAN + ' ' + CITY + ' ' + line;
+        if (province === YEREVAN) line = YEREVAN + ' ' + CITY + ' ' + line;
         const words: string[] = line.split(" ")
-          .filter(word => !(booleanUtils.isHourRange(word.replace('։', ':'))))
-          .map(word => word.replace(/[`՝]/g, ''));
+            .filter(word => !(booleanUtils.isHourRange(word.replace(/[։]/g, ':'))))
+            .map(word => word.replace(/[`՝]/g, ''));
         collectAddresses(words, province as TProvince, resData);
       }
     }
