@@ -21,54 +21,37 @@ const {
   PRIVATE,
 } = INFRASTRUCTURES;
 
-const collectInfrastructureNames = (text: string[], idx: number, result: string[], infrastructure: string): number => {
-  const tempName: string[] = [];
-  const tempNumbers: string[] = [];
+const collectNamesAndNumbers = (text: string[], idx: number, result: string[], infrastructure: string): number => {
+  const singleNameTemp: string[] = [];
+  const nameListTemp: string[] = [];
+  const numericalNamesTemp: string[] = [];
   let nextIdx: number = -1;
 
   for (let i = idx - 1; i >= 0; i--) {
-    if (booleanUtils.shouldIgnore(text[i])) {
-      nextIdx = i;
-      if (tempNumbers.length) {
-        for (const num of tempNumbers.reverse()) result.push(num + ' ' + infrastructure);
-        break;
-      } else {
-        continue;
-      };
+    if (booleanUtils.shouldIgnore(text[i]) || booleanUtils.isConjunction(text[i])) {
+      continue;
     }
 
     text[i] = text[i].replace(/[(),]/g, '');
     if (booleanUtils.doesNotContainNumbers(text[i])) {
-      if (booleanUtils.startsWithUppercase(text[i])) {
+      if (booleanUtils.startsWithUppercase(text[i]) || text[i] === "թիվ") {
+        singleNameTemp.push(text[i]);
         if (booleanUtils.didPrevAddressEnd(text[i - 1])) {
-          if (tempNumbers.length) {
-            if (tempName.length) {
-              const infraName: string = text[i] + ' ' + tempName.reverse().join(' ');
-              for (const num of tempNumbers) result.push(infraName + ' ' + num + ' ' + infrastructure);
-              tempName.length = 0;
-            } else {
-              for (const num of tempNumbers) result.push(text[i] + ' ' + num + ' ' + infrastructure);
-            }
-          } else {
-            if (tempName.length) {
-              result.push(text[i] + ' ' + tempName.reverse().join(' ') + ' ' + infrastructure);
-              tempName.length = 0;
-            } else {
-              result.push(text[i] + ' ' + infrastructure);
-            }
-          }
-        } else {
-          tempName.push(text[i]);
+          nameListTemp.push(singleNameTemp.reverse().join(' '));
+          singleNameTemp.length = 0;
         }
-      } else if (booleanUtils.isConjunction(text[i])) {
-        continue;
       } else {
         nextIdx = i + 1;
         break;
       }
     } else {
-      collectNumericProperties(text[i], tempNumbers);
+      collectNumericProperties(text[i], numericalNamesTemp);
     }
+  }
+
+  const nameListStr: string = nameListTemp.length ? nameListTemp.join(' ') + ' ' : '';  
+  if (numericalNamesTemp.length) {
+    for (const num of numericalNamesTemp) result.push(nameListStr + num + ' ' + infrastructure);
   }
 
   if (nextIdx >= 0) stringCleaner.removeParsedWords(text, nextIdx, idx);
@@ -78,7 +61,7 @@ const collectInfrastructureNames = (text: string[], idx: number, result: string[
 const collectInfrastructures = (text: string[], result: string[], isRequiredInfrastructure: Function, infrastructure: string) => {
   for (let i = text.length - 1; i >= 0; i--) {
     if (isRequiredInfrastructure(text[i])) {
-      const nextIdx: number = collectInfrastructureNames(text, i, result, infrastructure);
+      const nextIdx: number = collectNamesAndNumbers(text, i, result, infrastructure);
       i = nextIdx + 1;
     }
   }
@@ -87,7 +70,7 @@ const collectInfrastructures = (text: string[], result: string[], isRequiredInfr
 const collectBinarInfrastructures = (text: string[], result: string[], isRequiredInfrastructure: Function, infrastructure: string) => {
   for (let i = text.length - 1; i >= 0; i--) {
     if (isRequiredInfrastructure(text[i], text[i - 1])) {
-      const nextIdx: number = collectInfrastructureNames(text, i - 1, result, infrastructure);
+      const nextIdx: number = collectNamesAndNumbers(text, i - 1, result, infrastructure);
       i = nextIdx + 1;
     }
   }
@@ -178,7 +161,7 @@ const collectPluralKindergartens = (text: string[], result: string[]) => {
         infrastructure = KINDERGARTEN;
       }
 
-      const nextIdx: number = collectInfrastructureNames(text, idx, result, infrastructure);
+      const nextIdx: number = collectNamesAndNumbers(text, idx, result, infrastructure);
       i = nextIdx + 1;
     }
   }
