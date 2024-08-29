@@ -11,13 +11,31 @@ const jsonToObjWithSets = (json: { [key: string]: string[] }): { [key: string]: 
 export const CITIES: { [key: string]: Set<string> } = jsonToObjWithSets(citiesJson);
 export const VILLAGES: { [key: string]: Set<string> } = jsonToObjWithSets(villagesJson);
 export const COMMUNITIES: { [key: string]: Set<string> } = jsonToObjWithSets(communitiesJson);
-export const LOWERCASE_VILLAGE_NAMES: Set<string> = new Set(["սովխոզ", "աղբյուր", "կայարան"]);
+
+export const CONSTANT_WORDS = {
+  NUMBER: "թիվ",
+  OTHER: "Այլ",
+}
+
+export const LOWERCASE_VILLAGE_NAMES: Set<string> = new Set([
+  "սովխոզ",
+  "աղբյուր",
+  "կայարան",
+]);
 
 export const WORDS_TO_IGNORE = new Set<string>([
-  "թիվ",
+  "հարակից",
+  "սեփական",
   "մասնակի",
   "ամբողջությամբ",
 ]);
+
+export const WORDS_TO_REMOVE = {
+  NOT: "ոչ",
+  RESIDENT: "բնակիչ",
+  ACCOUNT_HOLDERS: "բաժանորդներ",
+  AREAS: "տարածքներ",
+}
 
 export const PROVINCES = {
   PROVINCE: "մարզ",

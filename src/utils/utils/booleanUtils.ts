@@ -1,4 +1,16 @@
-import { LOWERCASE_VILLAGE_NAMES, WORDS_TO_IGNORE, INFRASTRUCTURES } from "../constants/constants";
+import {
+  LOWERCASE_VILLAGE_NAMES,
+  WORDS_TO_IGNORE,
+  WORDS_TO_REMOVE,
+  INFRASTRUCTURES,
+} from "../constants/constants";
+
+const {
+  NOT,
+  RESIDENT,
+  ACCOUNT_HOLDERS,
+  AREAS,
+} = WORDS_TO_REMOVE;
 
 const {
   VILLAGE,
@@ -172,12 +184,15 @@ export const booleanUtils = {
   },
 
   shouldIgnore: (word: string): boolean => {
-    word = word.replace(/[-:,ը]/g, '').trim();
-    return !(word.length) || WORDS_TO_IGNORE.has(word);
+    return !word.length || WORDS_TO_IGNORE.has(word.replace(/[-:,ը]/g, '').trim());
   },
 
   startsWithUppercase: (word: string): boolean => {
     return !!word && word[0] === word[0].toUpperCase();
+  },
+
+  startsWithLowercase: (word: string): boolean => {
+    return !!word && word[0] === word[0].toLocaleLowerCase();
   },
 
   startsWithQuote: (word: string): boolean => {
@@ -199,6 +214,46 @@ export const booleanUtils = {
 
   didPrevAddressEnd: (word: string): boolean => {
     const punctuationRegex = /^[\p{P}\p{S}]$/u;
-    return !word || !word.length || word.endsWith(':') || word.endsWith(',') || booleanUtils.isConjunction(word) || (!punctuationRegex.test(word[0]) && word[0] === word[0].toLowerCase());
+    return !word || word.endsWith(':') || word.endsWith(',') || booleanUtils.isConjunction(word) || (!punctuationRegex.test(word[0]) && word[0] === word[0].toLowerCase());
+  },
+
+  isLonelyWord: (prev: string, curr: string, next: string): boolean => {
+    if (booleanUtils.startsWithLowercase(curr)) {
+      if (!prev && !next) return true;
+      if (!next && booleanUtils.isConjunction(prev)) return true;
+      if (!prev && booleanUtils.isConjunction(next)) return true;
+    }
+
+    return false;
+  },
+
+  shouldBeRemoved: (text: string[], idx: number): boolean => {
+    if (booleanUtils.shouldIgnore(text[idx])) {
+      return true;
+    }
+
+    const currWord: string = text[idx].replace(/[-,]/g, '');
+    const prevWord: string = text[idx - 1]?.replace(/[-,]/g, '') || '';
+    const nextWord: string = text[idx + 1]?.replace(/[-,]/g, '') || '';
+    const nextNextWord: string = text[idx + 2]?.replace(/[-,]/g, '') || '';
+
+    if (booleanUtils.isConjunction(currWord)
+      || currWord === AREAS
+      || currWord === ACCOUNT_HOLDERS
+      || booleanUtils.isLonelyWord(prevWord, currWord, nextWord)) {
+      return true;
+    }
+
+    if (currWord === NOT) {
+      if ((nextWord === RESIDENT && nextNextWord === ACCOUNT_HOLDERS) || nextWord === RESIDENT + ACCOUNT_HOLDERS) {
+        return true;
+      }
+    }
+
+    if ((currWord === RESIDENT && nextWord === ACCOUNT_HOLDERS) || currWord === RESIDENT + ACCOUNT_HOLDERS) {
+      return true;
+    }
+
+    return false;
   },
 };

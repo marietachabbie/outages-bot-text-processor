@@ -37,10 +37,10 @@ const collectNamesAndNumbers = (text: string[], idx: number, result: string[], i
       continue;
     }
 
-    text[i] = text[i].replace(/[(),]/g, '');
-    if (booleanUtils.doesNotContainNumbers(text[i])) {
-      if (booleanUtils.startsWithUppercase(text[i]) || text[i] === "թիվ") {
-        singleNameTemp.push(text[i]);
+    const word: string = text[i].replace(/[(),]/g, '');
+    if (booleanUtils.doesNotContainNumbers(word)) {
+      if (booleanUtils.startsWithUppercase(word) || word === NUMBER) {
+        singleNameTemp.push(word);
         if (booleanUtils.didPrevAddressEnd(text[i - 1])) {
           nameListTemp.push(singleNameTemp.reverse().join(' '));
           singleNameTemp.length = 0;
@@ -54,8 +54,14 @@ const collectNamesAndNumbers = (text: string[], idx: number, result: string[], i
     }
   }
 
-  const nameListStr: string = nameListTemp.length ? nameListTemp.join(' ') + ' ' : '';  
+  let nameListStr: string = '';
+  if (nameListTemp.length) {
+    if (nextIdx === -1) nextIdx = 0;
+    nameListStr = nameListTemp.join(' ') + ' ';
+  }
+
   if (numericalNamesTemp.length) {
+    if (nextIdx === -1) nextIdx = 0;
     for (const num of numericalNamesTemp) result.push(nameListStr + num + ' ' + infrastructure);
   }
 
@@ -76,6 +82,7 @@ const collectBinarInfrastructures = (text: string[], result: string[], isRequire
   for (let i = text.length - 1; i >= 0; i--) {
     if (isRequiredInfrastructure(text[i], text[i - 1])) {
       const nextIdx: number = collectNamesAndNumbers(text, i - 1, result, infrastructure);
+      stringCleaner.removeParsedWords(text, i, i);
       i = nextIdx + 1;
     }
   }
@@ -342,9 +349,8 @@ const parseProperties = (text: string[], idx: number, properties: string[]): num
 }
 
 const getStreetType = (word: string): string => {
-  if (booleanUtils.isStreet(word)) return STREET;
-  else if (booleanUtils.isAvenue(word)) return AVENUE;
-  else return "(temp) Something is wrong";
+  if (booleanUtils.isAvenue(word)) return AVENUE;
+  return STREET;
 }
 
 const parseStreetsAndProperties = (text: string[], result: string[]) => {
@@ -373,12 +379,49 @@ const parseStreetsAndProperties = (text: string[], result: string[]) => {
   }
 }
 
+const parseStreetWithoutWordStreet = (text: string, result: string[]): string => {
+  if (booleanUtils.startsWithLowercase(text)) return text;
+
+  const arr: string[] = text.split(' ').filter(str => str.length);
+  const streetName: string[] = [];
+  const properties: string[] = [];
+  let propPrevLength: number = 0;
+  let startIdx: number = 0;
+
+  for (let i = 0; i < arr.length; i++) {
+    if (booleanUtils.doesContainNumbers(arr[i])) {
+      startIdx = i;
+      break;
+    }
+  }
+
+  parseStreetName(arr.slice(0, startIdx + 2), startIdx, streetName);
+
+  for (let i = arr.length - 1; i >= startIdx; i--) {
+    if (booleanUtils.areBuildings(arr[i]) || booleanUtils.areHouses(arr[i])) {
+      collectMultipleProperties(arr, startIdx, i, properties);
+      const prevIdx: number = properties.length - propPrevLength;
+      stringCleaner.removeParsedWords(arr, arr.length - 1 - prevIdx, i);
+      stringCleaner.removeParsedWords(arr, 0, startIdx - 1);
+    }
+  }
+
+  for (const prop of properties) result.push(streetName + ' ' + prop);
+  const res: string[] = arr.filter(str => str.length);
+  return res.join(' ');
+}
+
 const parseAdresses = (text: string[]): string[] => {
   const result: string[] = [];
 
   parsePluralIndependents(text, result);
   parseStreetsAndProperties(text, result);
-  parseEducationalFacilities(text, result); // singulars (rename)
+
+  const remainingText: string = stringCleaner.cleanUpAfterInitialProcessing(text);
+  const remainingSingleAddresses: string = parseStreetWithoutWordStreet(remainingText, result);
+
+  const restProcessedAddresses: string[] = stringCleaner.processRemainingText(remainingSingleAddresses);
+  result.push(...restProcessedAddresses);
 
   return result;
 }
