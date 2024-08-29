@@ -8,15 +8,18 @@ const getStartIndex = (words: string[], idx: number): number => {
   for (let i = idx - 1; i >= idx - 3; i--) {
     if (words[i] && booleanUtils.doesNotContainNumbers(words[i])
       && !(words[i].endsWith(',')) && booleanUtils.isPartOfVillageName(words[i])) {
-        start = i;
+      start = i;
     } else break;
   }
 
   return start;
-}
+};
 
-const collectTempMunicipalities = (words: string[], idx: number): { tempMunicipalities: string[], count: number } => {
-  const tempMunicipalities: string[] = [words[idx]];
+const collectTempMunicipalities = (
+  words: string[],
+  idx: number,
+): { tempMunicipalities: string[], count: number } => {
+  const tempMunicipalities: string[] = [ words[idx] ];
   let temp: string = "";
   let count: number = 1;
 
@@ -40,17 +43,17 @@ const collectTempMunicipalities = (words: string[], idx: number): { tempMunicipa
       } else {
         if (booleanUtils.isConjunction(words[i])) {
           count++;
-        }
-        else break;
+        } else break;
       }
     }
   }
 
   return { tempMunicipalities, count };
-}
+};
 
 const collectMunicipalities = (tempData: string[], result: string[], province: TProvince) => {
-  const municipalityType: string = stringCleaner.clearPluralSuffix(stringCleaner.clearSuffixes(tempData[0]));
+  const municipalityType: string = stringCleaner
+    .clearPluralSuffix(stringCleaner.clearSuffixes(tempData[0]));
 
   for (let i = 1; i < tempData.length; i++) {
     tempData[i] = tempData[i].replace(',', '');
@@ -60,13 +63,13 @@ const collectMunicipalities = (tempData: string[], result: string[], province: T
       if (CITIES[province].has(tempData[i])) result.push(tempData[i] + " " + municipalityType);
     }
   }
-}
+};
 
 export const municipalityUtils = {
   getMunicipality: (words: string[], idx: number, province: TProvince): string => {
     let municipality: string = "";
     let temp: string = "";
-    let start: number = getStartIndex(words, idx);
+    const start: number = getStartIndex(words, idx);
 
     temp = words.slice(start, idx).join(" ");
     words[idx] = stringCleaner.clearSuffixes(words[idx]);
@@ -85,9 +88,11 @@ export const municipalityUtils = {
   getMunicipalities: (words: string[], idx: number, province: TProvince): string[] => {
     const { tempMunicipalities, count } = collectTempMunicipalities(words, idx);
     const municipalities: string[] = [];
-    if (tempMunicipalities.length) collectMunicipalities(tempMunicipalities, municipalities, province);
+    if (tempMunicipalities.length) {
+      collectMunicipalities(tempMunicipalities, municipalities, province);
+    }
 
     stringCleaner.removeParsedWords(words, idx - count + 1, idx);
     return municipalities;
   },
-}
+};

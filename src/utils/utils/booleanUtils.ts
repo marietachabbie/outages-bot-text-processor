@@ -18,23 +18,16 @@ const {
   COMMUNITY,
   CITY,
   CITIES,
-  DISTRICT,
   DISTRICTS,
   AVENUE,
   STREET,
   STREETS,
-  LANE,
   LANES,
-  HOUSE,
   HOUSES,
-  BUILDING,
   BUILDINGS,
-  OWNER,
   OWNERS,
   HOMETOWNS,
-  KINDERGARTEN,
   KINDERGARTENS,
-  SCHOOL,
   SCHOOLS,
   NURSERY,
   PRIVATE,
@@ -212,12 +205,21 @@ export const booleanUtils = {
     }
 
     if (currWord === NOT) {
-      if ((nextWord === RESIDENT && nextNextWord === ACCOUNT_HOLDERS) || nextWord === RESIDENT + ACCOUNT_HOLDERS) {
+      if (
+        (
+          nextWord === RESIDENT &&
+          nextNextWord === ACCOUNT_HOLDERS
+        ) || nextWord === RESIDENT + ACCOUNT_HOLDERS
+      ) {
         return true;
       }
     }
 
-    if ((currWord === RESIDENT && nextWord === ACCOUNT_HOLDERS) || currWord === RESIDENT + ACCOUNT_HOLDERS) {
+    if (
+      (
+        currWord === RESIDENT && nextWord === ACCOUNT_HOLDERS
+      ) || currWord === RESIDENT + ACCOUNT_HOLDERS
+    ) {
       return true;
     }
 

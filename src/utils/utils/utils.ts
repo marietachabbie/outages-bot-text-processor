@@ -5,9 +5,9 @@ import { provinceUtils } from "./provinceUtils";
 
 const buildAnnouncement = (text: string[], announcements: RegionalData) => {
   const tempRegionalData: TempRegionalData = {};
-  provinceUtils.organiseByProvince(text, tempRegionalData)
+  provinceUtils.organiseByProvince(text, tempRegionalData);
   provinceUtils.processForProvince(tempRegionalData, announcements);
-}
+};
 
 const generateStructuredAnnouncement = (text: string[]): RegionalData => {
   const res: RegionalData = {};
@@ -18,12 +18,12 @@ const generateStructuredAnnouncement = (text: string[]): RegionalData => {
   }
 
   return res;
-}
+};
 
 export default {
   parseMessage: (text: string): RegionalData => {
     const splittedText = text.split("\n");
     const res: RegionalData = generateStructuredAnnouncement(splittedText);
     return res;
-  }
-}
+  },
+};

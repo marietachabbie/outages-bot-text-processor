@@ -1,12 +1,12 @@
-const citiesJson = require("../../data/cities.json");
-const villagesJson = require("../../data/villages.json");
-const communitiesJson = require("../../data/communities.json");
+import citiesJson from "../../data/cities.json";
+import villagesJson from "../../data/villages.json";
+import communitiesJson from "../../data/communities.json";
 
 const jsonToObjWithSets = (json: { [key: string]: string[] }): { [key: string]: Set<string> } => {
   const result: { [key: string]: Set<string> } = {};
   for (const key in json) result[key] = new Set(json[key]);
   return result;
-}
+};
 
 export const CITIES: { [key: string]: Set<string> } = jsonToObjWithSets(citiesJson);
 export const VILLAGES: { [key: string]: Set<string> } = jsonToObjWithSets(villagesJson);
@@ -15,7 +15,7 @@ export const COMMUNITIES: { [key: string]: Set<string> } = jsonToObjWithSets(com
 export const CONSTANT_WORDS = {
   NUMBER: "թիվ",
   OTHER: "Այլ",
-}
+};
 
 export const LOWERCASE_VILLAGE_NAMES: Set<string> = new Set([
   "սովխոզ",
@@ -35,7 +35,7 @@ export const WORDS_TO_REMOVE = {
   RESIDENT: "բնակիչ",
   ACCOUNT_HOLDERS: "բաժանորդներ",
   AREAS: "տարածքներ",
-}
+};
 
 export const PROVINCES = {
   PROVINCE: "մարզ",
@@ -72,4 +72,4 @@ export const INFRASTRUCTURES = {
   SCHOOLS: "դպրոցներ",
   NURSERY: "մսուր",
   PRIVATE: "սեփական",
-}
+};

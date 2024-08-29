@@ -19,7 +19,7 @@ export const stringCleaner = {
     } else if (clean.endsWith('ում')) {
       clean = clean.slice(0, -3);
     } else if (clean.endsWith('ուղու')) {
-      clean = clean.replace('ուղու', 'ուղի')
+      clean = clean.replace('ուղու', 'ուղի');
     }
 
     return clean;
@@ -32,7 +32,7 @@ export const stringCleaner = {
     } else if (clean.endsWith("եր")) {
       clean = clean.slice(0, -2);
     }
-  
+
     return clean;
   },
 
@@ -55,15 +55,15 @@ export const stringCleaner = {
       } else if (!(text[i + 1]) && !(text[i].endsWith(','))) {
         text[i] += ',';
       }
-    })
+    });
 
     const res: string[] = text.filter(word => word.length);
     return res.join(' ');
   },
 
   clearInvalidParenthesis: (text: string): string => {
-    let opening: boolean = text.includes('(') ? true : false;
-    let closing: boolean = text.includes(')') ? true : false;
+    const opening: boolean = text.includes('(') ? true : false;
+    const closing: boolean = text.includes(')') ? true : false;
 
     if (opening && !closing) return text.replace('(', '');
     if (!opening && closing) return text.replace(')', '');
@@ -78,8 +78,8 @@ export const stringCleaner = {
     res.forEach((chunk, i) => {
       const clean: string = stringCleaner.clearInvalidParenthesis(chunk);
       res[i] = clean.trim();
-    })
+    });
 
     return res;
   },
-}
+};
