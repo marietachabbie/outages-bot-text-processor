@@ -86,21 +86,8 @@ export const booleanUtils = {
     return booleanUtils.startsWithUppercase(word) || LOWERCASE_VILLAGE_NAMES.has(word);
   },
 
-  isKindergarten: (word: string): boolean => {
-    return word.includes(KINDERGARTEN);
-  },
-
-  isSchool: (word: string): boolean => {
-    return word.includes(SCHOOL); // TODO
-  },
-
   isNurserySchool: (word: string): boolean => {
     return word.includes(NURSERY);
-  },
-
-  isLane: (word: string): boolean => {
-    word = word.replace(/[.,ը]/g, '');
-    return word === LANE || word === LANE.slice(0, 3) ||word === LANE + "ի";
   },
 
   isStreet: (word: string): boolean => {
@@ -111,26 +98,6 @@ export const booleanUtils = {
   isAvenue: (word: string): boolean => {
     word = word.replace(/[.,ը]/g, '');
     return word === AVENUE || word === AVENUE.slice(0, 3) || word === AVENUE[0];
-  },
-
-  isDistrict: (word: string): boolean => {
-    word = word.replace(/[.,ը]/g, '');
-    return word === DISTRICT || word === DISTRICT.slice(0, 3) || word === DISTRICT[0];
-  },
-
-  isHouse: (word: string): boolean => {
-    word = word.replace(/[.,ը]/g, '');
-    return word === HOUSE || word === HOUSE[0];
-  },
-
-  isBuilding: (word: string): boolean => {
-    word = word.replace(/[.,ը]/g, '');
-    return word === BUILDING || word === BUILDING[0];
-  },
-
-  isOwner: (word: string): boolean => {
-    word = word.toLocaleLowerCase().replace(/[.,ը]/g, '');
-    return word === OWNER;
   },
 
   areVillages: (word: string): boolean => {
