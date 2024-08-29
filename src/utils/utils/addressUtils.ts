@@ -4,7 +4,12 @@ import { booleanUtils } from "./booleanUtils";
 import { municipalityUtils } from "./municipalityUtils";
 import { stringCleaner } from "./stringCleaner";
 
-import { INFRASTRUCTURES } from "../constants/constants";
+import { INFRASTRUCTURES, CONSTANT_WORDS } from "../constants/constants";
+const {
+  NUMBER,
+  OTHER,
+} = CONSTANT_WORDS;
+
 const {
   DISTRICT,
   STREET,
@@ -407,6 +412,17 @@ export const collectAddresses = (words: string[], province: TProvince, announcem
       const municipalities: string[] = municipalityUtils.getMunicipalities(words, i, province);
       if (announcements[province] && municipalities.length) {
         municipalities.forEach(municipality => announcements[province]![municipality] ??= []);
+      }
+
+      const result: string[] = [];
+      const lefBetween: string[] = words.slice(i, prevIdx);
+      const remainingText: string = stringCleaner.cleanUpAfterInitialProcessing(lefBetween);
+      const restProcessedAddresses: string[] = stringCleaner.processRemainingText(remainingText);
+      result.push(...restProcessedAddresses);
+
+      if (announcements[province] && result.length) {
+        announcements[province]![OTHER] ??= [];
+        announcements[province]![OTHER].push(...result);
       }
 
       prevIdx = i;
