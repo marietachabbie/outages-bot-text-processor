@@ -1,5 +1,5 @@
 import { TProvince } from "../../types/region";
-import { RegionalData } from "../../types/regional-data";
+import { TRegionalData } from "../../types/regional-data";
 import { booleanUtils } from "./booleanUtils";
 import { municipalityUtils } from "./municipalityUtils";
 import { stringCleaner } from "./stringCleaner";
@@ -409,7 +409,7 @@ const parseStreetsAndProperties = (text: string[], result: string[]) => {
       if (nextIdx >= 0) i = nextIdx;
     }
   }
-}
+};
 
 const parseStreetWithoutWordStreet = (text: string, result: string[]): string => {
   if (booleanUtils.startsWithLowercase(text)) return text;
@@ -472,7 +472,7 @@ const collectStreetsAndBuildings = (words: string[], idx: number, nextIdx: numbe
 export const collectAddresses = (
   words: string[],
   province: TProvince,
-  announcements: RegionalData,
+  announcements: TRegionalData,
 ) => {
   announcements[province] ??= {};
   let prevIdx: number = words.length + 1;

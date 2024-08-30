@@ -1,5 +1,5 @@
 import { TProvince } from "../../types/region";
-import { RegionalData, TempRegionalData } from "../../types/regional-data";
+import { TRegionalData, TTempRegionalData } from "../../types/regional-data";
 import { NoProvinceFoundError } from "../errors/errors";
 import { stringCleaner } from "./stringCleaner";
 import { collectAddresses } from "./addressUtils";
@@ -33,7 +33,7 @@ export const provinceUtils = {
     });
   },
 
-  organiseByProvince: (text: string[], data: TempRegionalData) => {
+  organiseByProvince: (text: string[], data: TTempRegionalData) => {
     let province: TProvince | undefined;
 
     text.forEach(line => {
@@ -55,7 +55,7 @@ export const provinceUtils = {
     });
   },
 
-  processForProvince: (tempData: TempRegionalData, resData: RegionalData) => {
+  processForProvince: (tempData: TTempRegionalData, resData: TRegionalData) => {
     for (const [ province, text ] of Object.entries(tempData)) {
       for (let line of text) {
         if (province === YEREVAN) line = YEREVAN + ' ' + CITY + ' ' + line;
