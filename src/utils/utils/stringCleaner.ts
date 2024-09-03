@@ -1,4 +1,5 @@
-import { booleanUtils } from "./booleanUtils";
+import { EnhancedString } from "./enhancedString";
+import { EnhancedStringArray } from "./enhancedStringArray";
 
 export const stringCleaner = {
   clearPossessiveSuffix: (word: string): string => {
@@ -12,8 +13,8 @@ export const stringCleaner = {
     return clean;
   },
 
-  clearSuffixes: (word: string): string => {
-    let clean: string = word.replace(/[`՝,]/g, '');
+  clearSuffixes: (word: EnhancedString): string => {
+    let clean: string = word.replace(/[`՝,]/g, '').value;
     if (clean.endsWith('ի')) {
       clean = clean.slice(0, -1);
     } else if (clean.endsWith('ում')) {
@@ -25,7 +26,7 @@ export const stringCleaner = {
     return clean;
   },
 
-  clearPluralSuffix: (word: string): string => {
+  clearPluralSuffix: (word: string): EnhancedString => {
     let clean: string = word;
     if (clean.endsWith("ներ")) {
       clean = clean.slice(0, -3);
@@ -33,31 +34,34 @@ export const stringCleaner = {
       clean = clean.slice(0, -2);
     }
 
-    return clean;
+    return new EnhancedString(clean);
   },
 
-  removeParsedWords: (words: string[], start: number, end: number) => {
-    for (let i = start; i <= end; i++) words[i] = '';
+  removeParsedWords: (words: EnhancedStringArray, start: number, end: number) => {
+    for (let i = start; i <= end; i++) words.get(i).clean();
   },
 
-  clearCommas: (word: string): string => {
-    return word.replace(',', '');
-  },
+  cleanUpAfterInitialProcessing: (text: EnhancedStringArray): string => {
+    // TODO: forEach
+    for (let i = 0; i < text.length; i++) {
+      if (text.get(i).isEmpty()) continue;
 
-  cleanUpAfterInitialProcessing: (text: string[]): string => {
-    text.forEach((word, i) => {
-      if (booleanUtils.shouldBeRemoved(text, i)) {
-        if ((text[i].endsWith(',') || booleanUtils.isConjunction(text[i])) && !!text[i - 1] && !(text[i - 1].endsWith(','))) {
-          text[i - 1] += ',';
+      if (text.shouldBeRemoved(i)) {
+        if ((text.get(i).endsWithComma() ||
+          text.get(i).isConjunction()) &&
+          !!text.get(i - 1).value &&
+          !(text.get(i - 1).endsWithComma())
+        ) {
+          text.get(i - 1).add(',');
         }
 
         stringCleaner.removeParsedWords(text, i, i);
-      } else if (!(text[i + 1]) && !(text[i].endsWith(','))) {
-        text[i] += ',';
+      } else if (!(text.get(i + 1).value.length) && !(text.get(i).endsWithComma())) {
+        text.get(i).add(',');
       }
-    });
+    }
 
-    const res: string[] = text.filter(word => word.length);
+    const res: string[] = text.filterNotEmpties();
     return res.join(' ');
   },
 

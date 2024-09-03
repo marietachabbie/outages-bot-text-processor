@@ -3,6 +3,11 @@ import { NoDateFoundError } from "../errors/errors";
 import { stringCleaner } from "./stringCleaner";
 
 export const dateUtils = {
+  isInFuture: (date: Date): boolean => {
+    const now: Date = new Date();
+    return date >= now;
+  },
+
   getDay: (word: string): number | undefined => {
     const numeric = word.match(/\d+/);
     return numeric ? parseInt(numeric[0]) : undefined;
