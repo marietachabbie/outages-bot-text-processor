@@ -37,43 +37,30 @@ const {
   PRIVATE,
 } = INFRASTRUCTURES;
 
-export class EnhancedStringArray implements Iterable<EnhancedString> {
-  private strings: EnhancedString[];
-
+export class EnhancedStringArray extends Array<EnhancedString> {
   constructor(strings: string[]) {
-    this.strings = strings.map(str => new EnhancedString(str));
+    super(...strings.map(str => new EnhancedString(str)));
   }
 
-  [Symbol.iterator](): Iterator<EnhancedString> {
-    let index = 0;
-    const strings = this.strings;
-
-    return {
-      next(): IteratorResult<EnhancedString> {
-        if (index < strings.length) {
-          return { value: strings[index++], done: false };
-        }
-        return { value: undefined, done: true };
-
-      },
-    };
+  static get [Symbol.species]() {
+    return Array;
   }
 
   get(index: number): EnhancedString {
-    return this.strings[index] ?? new EnhancedString('');
+    return this[index] ?? new EnhancedString('');
   }
 
   get length(): number {
-    return this.strings.length;
+    return this.length;
   }
 
   get elements(): string[] {
-    return this.strings.map(es => es.value);
+    return this.map(es => es.value);
   }
 
   set(index: number, value: string): void {
-    if (this.strings[index]) {
-      this.strings[index] = new EnhancedString(value);
+    if (this[index]) {
+      this[index] = new EnhancedString(value);
     }
   }
 
@@ -83,10 +70,9 @@ export class EnhancedStringArray implements Iterable<EnhancedString> {
   }
 
   add(value: string): void {
-    this.strings.push(new EnhancedString(value));
+    this.push(new EnhancedString(value));
   }
 
-  // TODO: improve
   slice(start: number, end: number): EnhancedStringArray {
     return new EnhancedStringArray(this.elements.slice(start, end));
   }
@@ -134,7 +120,7 @@ export class EnhancedStringArray implements Iterable<EnhancedString> {
   }
 
   shouldBeRemoved(idx: number): boolean {
-    if (this.strings[idx].shouldIgnore()) {
+    if (this[idx].shouldIgnore()) {
       return true;
     }
 
@@ -172,14 +158,12 @@ export class EnhancedStringArray implements Iterable<EnhancedString> {
     return false;
   }
 
-  // TODO: filter
   filterNotEmpties(): string[] {
     return this
       .elements
       .filter(str => str.length);
   }
 
-  // TODO: filter
   filterNotHourRanges(): EnhancedStringArray {
     const result: string[] = [];
     for (let i = 0; i < this.length; i++) {
@@ -324,9 +308,8 @@ export class EnhancedStringArray implements Iterable<EnhancedString> {
   }
 
   private _collectOwners(result: string[]) {
-    // TODO: forEach
-    for (let i = 0; i < this.length; i++) {
-      if (this.get(i).areOwners()) {
+    this.forEach((enhancedWord, i) => {
+      if (enhancedWord.areOwners()) {
         if (this.get(i - 1).didAddressEnd()) {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const [ firstIdx, lastIdx ] = this._collectOwnerNames(i + 1, this.length - 1, result);
@@ -338,7 +321,7 @@ export class EnhancedStringArray implements Iterable<EnhancedString> {
           if (firstIdx >= 0) stringCleaner.removeParsedWords(this, firstIdx, i);
         }
       }
-    }
+    });
   }
 
   private _collectPluralKindergartens(result: string[]) {

@@ -42,7 +42,6 @@ export const stringCleaner = {
   },
 
   cleanUpAfterInitialProcessing: (text: EnhancedStringArray): string => {
-    // TODO: forEach
     for (let i = 0; i < text.length; i++) {
       if (text.get(i).isEmpty()) continue;
 

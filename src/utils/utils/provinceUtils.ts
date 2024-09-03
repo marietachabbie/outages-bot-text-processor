@@ -35,24 +35,24 @@ export const provinceUtils = {
   organiseByProvince: (text: EnhancedStringArray, data: TTempRegionalData) => {
     let province: TProvince | undefined;
 
-    // TODO: forEach
-    for (let i = 0; i < text.length; i++) {
-      const words: EnhancedStringArray = new EnhancedStringArray(text.elements[i].split(" "));
-      for (let j = 0; j < words.length; j++) {
-        const word: string = stringCleaner.clearSuffixes(words.get(j));
+    text.forEach((enhancedWord, i) => {
+      const words: EnhancedStringArray =
+        new EnhancedStringArray(enhancedWord.value.split(" "));
+      words.forEach((word, j) => {
+        const clean: string = stringCleaner.clearSuffixes(word);
 
-        if (word === YEREVAN || word === PROVINCE) {
-          if (word === YEREVAN) province = TProvince[word as keyof typeof TProvince];
-          else if (word === PROVINCE) province = getProvince(words.elements[j - 1]);
+        if (clean === YEREVAN || clean === PROVINCE) {
+          if (clean === YEREVAN) province = TProvince[clean as keyof typeof TProvince];
+          else if (clean === PROVINCE) province = getProvince(words.elements[j - 1]);
           text.set(i, '');
         }
-      }
+      });
 
       if (province) {
         data[province] ??= [];
         if (text.elements[i].length) data[province]?.push(text.elements[i]);
       }
-    }
+    });
   },
 
   processForProvince: (tempData: TTempRegionalData, resData: TRegionalData) => {
