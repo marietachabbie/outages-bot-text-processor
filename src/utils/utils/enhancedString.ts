@@ -84,11 +84,11 @@ export class EnhancedString {
     return !this._value.length;
   }
 
-  isLonelyWord(prev: EnhancedString, next: EnhancedString): boolean {
+  isLonelyWord(prev?: EnhancedString, next?: EnhancedString): boolean {
     if (this.startsWithLowercase()) {
-      if (prev.isEmpty() && next.isEmpty()) return true;
-      if (next.isEmpty() && prev.isConjunction()) return true;
-      if (prev.isEmpty() && next.isConjunction()) return true;
+      if ((!prev || prev.isEmpty()) && (!next || next.isEmpty())) return true;
+      if ((!next || next.isEmpty()) && prev!.isConjunction()) return true;
+      if ((!prev || prev.isEmpty()) && next!.isConjunction()) return true;
     }
 
     return false;
@@ -143,7 +143,7 @@ export class EnhancedString {
   }
 
   isAvenue(): boolean {
-    const word: string = this._value.replace(/[.,ը]/g, '');
+    const word: string = this._value.replace(/[.,ն]/g, '');
     return word === AVENUE || word === AVENUE.slice(0, 3) || word === AVENUE[0];
   }
 
@@ -196,8 +196,8 @@ export class EnhancedString {
     return this._value.startsWith(LANES);
   }
 
-  arePrivateHouses(word?: EnhancedString): boolean {
-    return this.areHouses() && word?.value === PRIVATE;
+  arePrivateHouses(prev?: EnhancedString): boolean {
+    return this.areHouses() && prev?.value === PRIVATE;
   }
 
   shouldIgnore(): boolean {
@@ -237,7 +237,7 @@ export class EnhancedString {
       this.isConjunction() ||
       (
         !punctuationRegex.test(this._value[0]) &&
-          this._value[0] === this._value[0].toLowerCase()
+          this.startsWithLowercase()
       );
   }
 
