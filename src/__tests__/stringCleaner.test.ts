@@ -1,7 +1,7 @@
-import { describe, expect, test } from '@jest/globals';
+import { describe, expect, test } from "@jest/globals";
 import { stringCleaner } from "../utils/utils/stringCleaner";
-import { EnhancedString } from '../utils/utils/enhancedString';
-import { EnhancedStringArray } from '../utils/utils/enhancedStringArray';
+import { EnhancedString } from "../utils/utils/enhancedString";
+import { EnhancedStringArray } from "../utils/utils/enhancedStringArray";
 
 describe("String cleaner", () => {
   test("clearPossessiveSuffix clears possesive suffixes", () => {

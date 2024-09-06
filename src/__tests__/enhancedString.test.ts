@@ -1,6 +1,6 @@
-import { describe, expect, test } from '@jest/globals';
-import { EnhancedString } from '../utils/utils/enhancedString';
-import { EnhancedStringArray } from '../utils/utils/enhancedStringArray';
+import { describe, expect, test } from "@jest/globals";
+import { EnhancedString } from "../utils/utils/enhancedString";
+import { EnhancedStringArray } from "../utils/utils/enhancedStringArray";
 
 describe("Enhanced string", () => {
   test("isHourRange validates string that is hour range", () => {

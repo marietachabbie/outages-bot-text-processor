@@ -1,4 +1,4 @@
-import { describe, expect, test } from '@jest/globals';
+import { describe, expect, test } from "@jest/globals";
 import { dateUtils } from "../utils/utils/dateUtils";
 import { NoDateFoundError } from "../utils/errors/errors";
 
