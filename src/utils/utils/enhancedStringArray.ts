@@ -180,8 +180,10 @@ export class EnhancedStringArray extends Array<EnhancedString> {
     infrastructure: string,
   ): number {
     const singleNameTemp: string[] = [];
-    const nameListTemp: string[] = [];
+    const singleNameListTemp: string[] = [];
+    const multipleNameListTemp: string[] = [];
     const numericalNamesTemp: string[] = [];
+    let numericsExist: boolean = false;
     let nextIdx: number = -1;
 
     for (let i = idx - 1; i >= 0; i--) {
@@ -194,8 +196,13 @@ export class EnhancedStringArray extends Array<EnhancedString> {
         if (word.startsWithUppercase() || word.value === NUMBER) {
           singleNameTemp.push(word.value);
           if (this.get(i - 1).didAddressEnd()) {
-            nameListTemp.push(singleNameTemp.reverse().join(' '));
-            singleNameTemp.length = 0;
+            if (numericsExist) {
+              singleNameListTemp.push(singleNameTemp.reverse().join(' '));
+              singleNameTemp.length = 0;
+            } else {
+              multipleNameListTemp.push(singleNameTemp.reverse().join(' '));
+              singleNameTemp.length = 0;
+            }
           }
         } else {
           nextIdx = i + 1;
@@ -203,18 +210,22 @@ export class EnhancedStringArray extends Array<EnhancedString> {
         }
       } else {
         this.get(i).collectNumericProperties(numericalNamesTemp);
+        if (numericalNamesTemp.length) numericsExist = true;
       }
     }
 
-    let nameListStr: string = '';
-    if (nameListTemp.length) {
+    let singleNameListStr: string = '';
+    if (singleNameListTemp.length) {
       if (nextIdx === -1) nextIdx = 0;
-      nameListStr = nameListTemp.join(' ') + ' ';
+      singleNameListStr = singleNameListTemp.join(' ') + ' ';
     }
 
-    if (numericalNamesTemp.length) {
+    if (numericsExist) {
       if (nextIdx === -1) nextIdx = 0;
-      for (const num of numericalNamesTemp) result.push(nameListStr + num + ' ' + infrastructure);
+      numericalNamesTemp.forEach(num => result.push(singleNameListStr + num + ' ' + infrastructure));
+    } else if (multipleNameListTemp.length) {
+      if (nextIdx === -1) nextIdx = 0;
+      multipleNameListTemp.forEach(name => result.push(name + ' ' + infrastructure));
     }
 
     if (nextIdx >= 0) stringCleaner.removeParsedWords(this, nextIdx, idx);
