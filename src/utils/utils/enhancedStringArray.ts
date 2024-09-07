@@ -265,7 +265,11 @@ export class EnhancedStringArray extends Array<EnhancedString> {
     for (let i = idx - 1; i >= 0; i--) {
       if (this.get(i).startsWithQuote()) {
         start = i;
-      } else if (this.get(i).endsWithQuote() || this.get(i - 1).startsWithQuote()) {
+      } else if (
+        this.get(i).endsWithQuote() ||
+        this.get(i - 1).startsWithQuote() ||
+        this.get(i).isConjunction()
+      ) {
         continue;
       } else {
         break;
@@ -287,6 +291,8 @@ export class EnhancedStringArray extends Array<EnhancedString> {
 
     for (let i = start; i <= end; i++) {
       this.replaceOne(i, ',', '');
+      if (this.get(i).isConjunction()) continue;
+
       if (this.get(i).startsWithQuote() && this.get(i).endsWithQuote()) {
         ownerNames.push(this.elements[i]);
         if (firstIdx === -1) firstIdx = i;
@@ -297,7 +303,8 @@ export class EnhancedStringArray extends Array<EnhancedString> {
       } else if (this.get(i).endsWithQuote()) {
         if (!(this.get(i).endsWithComma()) &&
           !(this.get(i + 1).startsWithQuote()) &&
-          this.get(i + 1).startsWithUppercase()
+          this.get(i + 1).startsWithUppercase() &&
+          !(this.get(i + 1).areOwners())
         ) {
           break;
         } else {
