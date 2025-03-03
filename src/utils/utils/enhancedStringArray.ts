@@ -473,7 +473,9 @@ export class EnhancedStringArray extends Array<EnhancedString> {
     const infrastructure: string = this._getInfrastructureType(end);
     const propNumbers: string[] = [];
     for (let i = start; i < end; i++) {
-      if (!(this.get(i).isConjunction())) this.get(i).collectNumericProperties(propNumbers);
+      if (!(this.get(i).isConjunction())) {
+        this.get(i).collectNumericProperties(propNumbers);
+      }
     }
 
     for (const num of propNumbers) properties.push(num + ' ' + infrastructure);
@@ -539,7 +541,7 @@ export class EnhancedStringArray extends Array<EnhancedString> {
         this._parseStreetName(i, streetName);
         const nextIdx: number = this._parseProperties(i, properties);
 
-        if (streetName.length) {
+        if (streetName.length > 1) {
           const street: string = streetName.reverse().join(' ');
           streetName.length = 0;
           if (properties.length) {

@@ -171,9 +171,8 @@ describe("Enhanced string", () => {
       "ամբողջությամբ",
     ]);
 
-    words.forEach(word => {
-      expect(word.shouldIgnore()).toBe(true);
-    });
+    const allIgnored = words.every(word => word.shouldIgnore());
+    expect(allIgnored).toBe(true);
   });
 
   test("doesNotContainNumbers validates word NOT containing numbers", () => {
@@ -197,6 +196,9 @@ describe("Enhanced string", () => {
     words.forEach(word => {
       expect(word.didAddressEnd()).toBe(true);
     });
+
+    const allEnded = words.every(word => word.didAddressEnd());
+    expect(allEnded).toBe(true);
   });
 
   test("collectNumericProperties collects numbers", () => {

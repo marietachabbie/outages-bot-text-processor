@@ -130,9 +130,12 @@ dist
 .pnp.*
 
 # local testing
-/src/data/input_examples/*
+/src/__tests__/input_examples/*
 el_input_file.json
 notes.json
 launch.json
 index.ts
 spell_checker.py
+
+package-lock.json
+.vscode
