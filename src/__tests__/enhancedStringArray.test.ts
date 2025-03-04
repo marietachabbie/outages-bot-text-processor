@@ -10,7 +10,7 @@ describe("EnhancedStringArray", () => {
       const arr = new EnhancedStringArray([ "նրբանցք:" ]);
       const word = new EnhancedString("նրբանցք");
 
-      arr.replaceOne(0, ':', '');
+      arr.replaceOne(0, ":", "");
       expect(arr.get(0)).toStrictEqual(word);
     });
 
@@ -22,23 +22,14 @@ describe("EnhancedStringArray", () => {
     });
 
     test("shouldBeRemoved identifies if word should be removed", () => {
-      const text = new EnhancedStringArray([
-        "և",
-        "",
-        "բառ",
-        "",
-      ]);
+      const text = new EnhancedStringArray([ "և", "", "բառ", "" ]);
 
       expect(text.shouldBeRemoved(0)).toBe(true);
       expect(text.shouldBeRemoved(2)).toBe(true);
     });
 
     test("shouldBeRemoved identifies not resident accounts to be removed", () => {
-      const text = new EnhancedStringArray([
-        "ոչ",
-        "բնակիչ",
-        "բաժանորդներ",
-      ]);
+      const text = new EnhancedStringArray([ "ոչ", "բնակիչ", "բաժանորդներ" ]);
 
       expect(text.shouldBeRemoved(0)).toBe(true);
     });
@@ -76,8 +67,12 @@ describe("EnhancedStringArray", () => {
       const province = "Արարատ";
       const announcements: TRegionalData = {};
       const output: TRegionalData = {
-        "Արարատ": {
-          "Արարատ գյուղ": [ "«Արարատ կաթ» ՍՊԸ", "«Սեդրակ Սարգսյան» ԱՁ", "Զինմաս" ],
+        Արարատ: {
+          "Արարատ գյուղ": [
+            "«Արարատ կաթ» ՍՊԸ",
+            "«Սեդրակ Սարգսյան» ԱՁ",
+            "Զինմաս",
+          ],
         },
       };
 
@@ -99,7 +94,7 @@ describe("EnhancedStringArray", () => {
       const province = "Սյունիք";
       const announcements: TRegionalData = {};
       const output: TRegionalData = {
-        "Սյունիք": {
+        Սյունիք: {
           "Քաջարան քաղաք": [ "Գայի պողոտա 1 շենք", "Գայի պողոտա 2 շենք" ],
         },
       };
@@ -143,7 +138,7 @@ describe("EnhancedStringArray", () => {
       const province = "Արմավիր";
       const announcements: TRegionalData = {};
       const output: TRegionalData = {
-        "Արմավիր": {
+        Արմավիր: {
           "Արմավիր քաղաք": [],
           "Էջմիածին քաղաք": [],
           "Մեծամոր քաղաք": [],
@@ -175,11 +170,11 @@ describe("EnhancedStringArray", () => {
       const province = "Արմավիր";
       const announcements: TRegionalData = {};
       const output: TRegionalData = {
-        "Արմավիր": {
+        Արմավիր: {
           "Արմավիր քաղաք": [],
           "Էջմիածին քաղաք": [],
           "Մեծամոր քաղաք": [],
-          "Այլ": [
+          Այլ: [
             "«Մշո տղեք» ենթակայան",
             "Գարեգին Ա փողոցի սկզբնամասի գազալցակայան",
           ],
@@ -190,6 +185,7 @@ describe("EnhancedStringArray", () => {
       expect(announcements).toStrictEqual(output);
     });
   });
+
 
     test("_collectInfrastructures collects non-numerical names for plural infrastructures", () => {
       const text = new EnhancedStringArray([
@@ -208,7 +204,11 @@ describe("EnhancedStringArray", () => {
       ];
 
       // @ts-expect-error: Force access to the private method
-      text._collectInfrastructures(result, EnhancedString.prototype.areDistricts, "թաղամաս");
+      text._collectInfrastructures(
+        result,
+        EnhancedString.prototype.areDistricts,
+        "թաղամաս",
+      );
       const allEmpty = text.every(word => word.isEmpty());
 
       expect(result).toStrictEqual(output);
@@ -225,20 +225,21 @@ describe("EnhancedStringArray", () => {
       ]);
 
       const result: string[] = [];
-      const output: string[] = [
-        "թիվ 123 դպրոց",
-        "թիվ 122 դպրոց",
-      ];
+      const output: string[] = [ "թիվ 123 դպրոց", "թիվ 122 դպրոց" ];
 
       // @ts-expect-error: Force access to the private method
-      text._collectInfrastructures(result, EnhancedString.prototype.areSchools, "դպրոց");
-      const allEmpty = text.every(word => word.isEmpty());
+      text._collectInfrastructures(
+        result,
+        EnhancedString.prototype.areSchools,
+        "դպրոց",
+      );
+      const allEmpty = text.every((word) => word.isEmpty());
 
       expect(result).toStrictEqual(output);
       expect(allEmpty).toBe(true);
     });
 
-    test("_collectBinarInfrastructures collects valid hometowns", () => {
+    test("_collectDualInfrastructures collects valid hometowns", () => {
       const text = new EnhancedStringArray([
         "142,",
         "153,",
@@ -255,8 +256,12 @@ describe("EnhancedStringArray", () => {
       ];
 
       // @ts-expect-error: Force access to the private method
-      text._collectBinarInfrastructures(result, EnhancedString.prototype.areHometowns, "տնակային ավան");
-      const allEmpty = text.every(word => word.isEmpty());
+      text._collectDualInfrastructures(
+        result,
+        EnhancedString.prototype.areHometowns,
+        "տնակային ավան",
+      );
+      const allEmpty = text.every((word) => word.isEmpty());
 
       expect(result).toStrictEqual(output);
       expect(allEmpty).toBe(true);
@@ -386,10 +391,10 @@ describe("EnhancedStringArray", () => {
         "շենքեր,",
       ]);
 
-      const streetName: string[] = [ ];
+      const streetName: string[] = [];
       const avenueName: string[] = [];
-      const avenueOtput: string[] = [ "Մյասնիկյան" ];
-      const streetOtput: string[] = [
+      const avenueOutput: string[] = [ "Մյասնիկյան" ];
+      const streetOutput: string[] = [
         "Սաֆարյան",
         "Ս․",
         "զանգ.",
@@ -403,11 +408,15 @@ describe("EnhancedStringArray", () => {
       // @ts-expect-error: Force access to the private method
       textAvenue._parseStreetName(2, avenueName);
 
-      const allStrEmpty = textStreet.slice(1, 8).every(word => word.isEmpty());
-      const allAveEmpty = textAvenue.slice(1, 3).every(word => word.isEmpty());
+      const allStrEmpty = textStreet
+        .slice(1, 8)
+        .every((word) => word.isEmpty());
+      const allAveEmpty = textAvenue
+        .slice(1, 3)
+        .every((word) => word.isEmpty());
 
-      expect(streetName).toStrictEqual(streetOtput);
-      expect(avenueName).toStrictEqual(avenueOtput);
+      expect(streetName).toStrictEqual(streetOutput);
+      expect(avenueName).toStrictEqual(avenueOutput);
       expect(allStrEmpty).toBe(true);
       expect(allAveEmpty).toBe(true);
     });

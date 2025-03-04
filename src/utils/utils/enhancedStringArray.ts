@@ -5,22 +5,11 @@ import { municipalityUtils } from "./municipalityUtils";
 import { stringCleaner } from "./stringCleaner";
 import { CONSTANT_WORDS } from "../constants/constants";
 
-import {
-  WORDS_TO_REMOVE,
-  INFRASTRUCTURES,
-} from "../constants/constants";
+import { WORDS_TO_REMOVE, INFRASTRUCTURES } from "../constants/constants";
 
-const {
-  NUMBER,
-  OTHER,
-} = CONSTANT_WORDS;
+const { NUMBER, OTHER } = CONSTANT_WORDS;
 
-const {
-  NOT,
-  RESIDENT,
-  ACCOUNT_HOLDERS,
-  AREAS,
-} = WORDS_TO_REMOVE;
+const { NOT, RESIDENT, ACCOUNT_HOLDERS, AREAS } = WORDS_TO_REMOVE;
 
 const {
   DISTRICT,
@@ -47,7 +36,7 @@ export class EnhancedStringArray extends Array<EnhancedString> {
   }
 
   get(index: number): EnhancedString {
-    return this[index] ?? new EnhancedString('');
+    return this[index] ?? new EnhancedString("");
   }
 
   get length(): number {
@@ -77,36 +66,45 @@ export class EnhancedStringArray extends Array<EnhancedString> {
     return new EnhancedStringArray(this.elements.slice(start, end));
   }
 
-  collectAddresses(
-    province: TProvince,
-    announcements: TRegionalData,
-  ) {
+  collectAddresses(province: TProvince, announcements: TRegionalData) {
     announcements[province] ??= {};
     let prevIdx: number = this.length + 1;
 
     for (let i = this.length - 1; i >= 0; i--) {
       const word = this.get(i).clearCommas();
       if (word.isVillage() || word.isCity() || word.isCommunity()) {
-        const municipality: string = municipalityUtils.getMunicipality(this, i, province);
+        const municipality: string = municipalityUtils.getMunicipality(
+          this,
+          i,
+          province,
+        );
 
         if (announcements[province] && municipality.length) {
           announcements[province]![municipality] ??= [];
           const addresses = this._collectStreetsAndBuildings(i, prevIdx);
 
-          if (addresses.length) announcements[province]![municipality].push(...addresses);
+          if (addresses.length)
+            announcements[province]![municipality].push(...addresses);
           prevIdx = i;
         }
       } else if (word.areVillages() || word.areCities()) {
-        const municipalities: string[] = municipalityUtils.getMunicipalities(this, i, province);
+        const municipalities: string[] = municipalityUtils.getMunicipalities(
+          this,
+          i,
+          province,
+        );
         if (announcements[province] && municipalities.length) {
-          municipalities.forEach(municipality => announcements[province]![municipality] ??= []);
+          municipalities.forEach(
+            municipality => (announcements[province]![municipality] ??= []),
+          );
         }
 
         const result: string[] = [];
         const lefBetween: EnhancedStringArray = this.slice(i, prevIdx);
-        const remainingText: string = stringCleaner
-          .cleanUpAfterInitialProcessing(lefBetween);
-        const restProcessedAddresses: string[] = stringCleaner.processRemainingText(remainingText);
+        const remainingText: string =
+          stringCleaner.cleanUpAfterInitialProcessing(lefBetween);
+        const restProcessedAddresses: string[] =
+          stringCleaner.processRemainingText(remainingText);
         result.push(...restProcessedAddresses);
 
         if (announcements[province] && result.length) {
@@ -124,33 +122,36 @@ export class EnhancedStringArray extends Array<EnhancedString> {
       return true;
     }
 
-    const currWord: EnhancedString = this.get(idx).replace(/[-,]/g, '');
-    const prevWord: EnhancedString = this.get(idx - 1)?.replace(/[-,]/g, '') || '';
-    const nextWord: EnhancedString = this.get(idx + 1)?.replace(/[-,]/g, '') || '';
-    const nextNextWord: EnhancedString = this.get(idx + 2)?.replace(/[-,]/g, '') || '';
+    const currWord: EnhancedString = this.get(idx).replace(/[-,]/g, "");
+    const prevWord: EnhancedString =
+      this.get(idx - 1)?.replace(/[-,]/g, "") || "";
+    const nextWord: EnhancedString =
+      this.get(idx + 1)?.replace(/[-,]/g, "") || "";
+    const nextNextWord: EnhancedString =
+      this.get(idx + 2)?.replace(/[-,]/g, "") || "";
 
-    if (currWord.isConjunction()
-      || currWord.value === AREAS
-      || currWord.value === ACCOUNT_HOLDERS
-      || currWord.isLonelyWord(prevWord, nextWord)) {
+    if (
+      currWord.isConjunction() ||
+      currWord.value === AREAS ||
+      currWord.value === ACCOUNT_HOLDERS ||
+      currWord.isLonelyWord(prevWord, nextWord)
+    ) {
       return true;
     }
 
     if (currWord.value === NOT) {
       if (
-        (
-          nextWord.value === RESIDENT &&
-          nextNextWord.value === ACCOUNT_HOLDERS
-        ) || nextWord.value === RESIDENT + ACCOUNT_HOLDERS
+        (nextWord.value === RESIDENT &&
+          nextNextWord.value === ACCOUNT_HOLDERS) ||
+        nextWord.value === RESIDENT + ACCOUNT_HOLDERS
       ) {
         return true;
       }
     }
 
     if (
-      (
-        currWord.value === RESIDENT && nextWord.value === ACCOUNT_HOLDERS
-      ) || currWord.value === RESIDENT + ACCOUNT_HOLDERS
+      (currWord.value === RESIDENT && nextWord.value === ACCOUNT_HOLDERS) ||
+      currWord.value === RESIDENT + ACCOUNT_HOLDERS
     ) {
       return true;
     }
@@ -159,16 +160,14 @@ export class EnhancedStringArray extends Array<EnhancedString> {
   }
 
   filterNotEmpties(): string[] {
-    return this
-      .elements
-      .filter(str => str.length);
+    return this.elements.filter((str) => str.length);
   }
 
   filterNotHourRanges(): EnhancedStringArray {
     const result: string[] = [];
     for (let i = 0; i < this.length; i++) {
-      const isHour: boolean = this.get(i).replace(/[։]/g, ':').isHourRange();
-      if (!isHour) result.push(this.get(i).replace(/[`՝]/g, '').value);
+      const isHour: boolean = this.get(i).replace(/[։]/g, ":").isHourRange();
+      if (!isHour) result.push(this.get(i).replace(/[`՝]/g, "").value);
     }
 
     return new EnhancedStringArray(result);
@@ -191,16 +190,16 @@ export class EnhancedStringArray extends Array<EnhancedString> {
         continue;
       }
 
-      const word: EnhancedString = this.get(i).replace(/[(),]/g, '');
+      const word: EnhancedString = this.get(i).replace(/[(),]/g, "");
       if (word.doesNotContainNumbers()) {
         if (word.startsWithUppercase() || word.value === NUMBER) {
           singleNameTemp.push(word.value);
           if (this.get(i - 1).didAddressEnd()) {
             if (numericsExist) {
-              singleNameListTemp.push(singleNameTemp.reverse().join(' '));
+              singleNameListTemp.push(singleNameTemp.reverse().join(" "));
               singleNameTemp.length = 0;
             } else {
-              multipleNameListTemp.push(singleNameTemp.reverse().join(' '));
+              multipleNameListTemp.push(singleNameTemp.reverse().join(" "));
               singleNameTemp.length = 0;
             }
           }
@@ -214,18 +213,22 @@ export class EnhancedStringArray extends Array<EnhancedString> {
       }
     }
 
-    let singleNameListStr: string = '';
+    let singleNameListStr: string = "";
     if (singleNameListTemp.length) {
       if (nextIdx === -1) nextIdx = 0;
-      singleNameListStr = singleNameListTemp.join(' ') + ' ';
+      singleNameListStr = singleNameListTemp.join(" ") + " ";
     }
 
     if (numericsExist) {
       if (nextIdx === -1) nextIdx = 0;
-      numericalNamesTemp.forEach(num => result.push(singleNameListStr + num + ' ' + infrastructure));
+      numericalNamesTemp.forEach(num =>
+        result.push(singleNameListStr + num + " " + infrastructure),
+      );
     } else if (multipleNameListTemp.length) {
       if (nextIdx === -1) nextIdx = 0;
-      multipleNameListTemp.forEach(name => result.push(name + ' ' + infrastructure));
+      multipleNameListTemp.forEach(name =>
+        result.push(name + " " + infrastructure),
+      );
     }
 
     if (nextIdx >= 0) stringCleaner.removeParsedWords(this, nextIdx, idx);
@@ -239,20 +242,31 @@ export class EnhancedStringArray extends Array<EnhancedString> {
   ) {
     for (let i = this.length - 1; i >= 0; i--) {
       if (isRequiredInfrastructure.call(this.get(i))) {
-        const nextIdx: number = this._collectNamesAndNumbers(i, result, infrastructure);
+        const nextIdx: number = this._collectNamesAndNumbers(
+          i,
+          result,
+          infrastructure,
+        );
         i = nextIdx + 1;
       }
     }
   }
 
-  private _collectBinarInfrastructures(
+  private _collectDualInfrastructures(
     result: string[],
-    isRequiredInfrastructure: (this: EnhancedString, prev?: EnhancedString) => boolean,
+    isRequiredInfrastructure: (
+      this: EnhancedString,
+      prev?: EnhancedString
+    ) => boolean,
     infrastructure: string,
   ) {
     for (let i = this.length - 1; i >= 0; i--) {
       if (isRequiredInfrastructure.call(this.get(i), this.get(i - 1))) {
-        const nextIdx: number = this._collectNamesAndNumbers(i - 1, result, infrastructure);
+        const nextIdx: number = this._collectNamesAndNumbers(
+          i - 1,
+          result,
+          infrastructure,
+        );
         stringCleaner.removeParsedWords(this, i, i);
         i = nextIdx + 1;
       }
@@ -279,7 +293,7 @@ export class EnhancedStringArray extends Array<EnhancedString> {
     return start;
   }
 
-  private _collectOwnerNames (
+  private _collectOwnerNames(
     start: number,
     end: number,
     result: string[],
@@ -290,7 +304,7 @@ export class EnhancedStringArray extends Array<EnhancedString> {
     let lastIdx: number = -1;
 
     for (let i = start; i <= end; i++) {
-      this.replaceOne(i, ',', '');
+      this.replaceOne(i, ",", "");
       if (this.get(i).isConjunction()) continue;
 
       if (this.get(i).startsWithQuote() && this.get(i).endsWithQuote()) {
@@ -301,17 +315,18 @@ export class EnhancedStringArray extends Array<EnhancedString> {
         tempName.push(this.elements[i]);
         if (firstIdx === -1) firstIdx = i;
       } else if (this.get(i).endsWithQuote()) {
-        if (!(this.get(i).endsWithComma()) &&
-          !(this.get(i + 1).startsWithQuote()) &&
+        if (
+          !this.get(i).endsWithComma() &&
+          !this.get(i + 1).startsWithQuote() &&
           this.get(i + 1).startsWithUppercase() &&
-          !(this.get(i + 1).areOwners())
+          !this.get(i + 1).areOwners()
         ) {
           break;
         } else {
           tempName.push(this.elements[i]);
         }
 
-        ownerNames.push(tempName.join(' '));
+        ownerNames.push(tempName.join(" "));
         lastIdx = Math.max(i, lastIdx);
         tempName.length = 0;
       } else if (this.get(i).startsWithUppercase()) {
@@ -321,7 +336,7 @@ export class EnhancedStringArray extends Array<EnhancedString> {
       }
     }
 
-    for (const name of ownerNames) result.push(name + ' ' + OWNER);
+    for (const name of ownerNames) result.push(name + " " + OWNER);
     return [ firstIdx, lastIdx ];
   }
 
@@ -330,12 +345,20 @@ export class EnhancedStringArray extends Array<EnhancedString> {
       if (enhancedWord.areOwners()) {
         if (this.get(i - 1).didAddressEnd()) {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const [ firstIdx, lastIdx ] = this._collectOwnerNames(i + 1, this.length - 1, result);
+          const [ firstIdx, lastIdx ] = this._collectOwnerNames(
+            i + 1,
+            this.length - 1,
+            result,
+          );
           if (lastIdx >= 0) stringCleaner.removeParsedWords(this, i, lastIdx);
         } else {
           const startIndex: number = this._getStartOfOwnersList(i);
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const [ firstIdx, lastIdx ] = this._collectOwnerNames(startIndex, i - 1, result);
+          const [ firstIdx, lastIdx ] = this._collectOwnerNames(
+            startIndex,
+            i - 1,
+            result,
+          );
           if (firstIdx >= 0) stringCleaner.removeParsedWords(this, firstIdx, i);
         }
       }
@@ -350,17 +373,21 @@ export class EnhancedStringArray extends Array<EnhancedString> {
       if (this.get(i).areKindergartens()) {
         if (this.get(i).isNurserySchool()) {
           idx = i;
-          infrastructure = NURSERY + '-' + KINDERGARTEN;
+          infrastructure = NURSERY + "-" + KINDERGARTEN;
         } else if (this.get(i - 1).isNurserySchool()) {
           idx = i - 1;
           this.get(i).clean();
-          infrastructure = NURSERY + '-' + KINDERGARTEN;
+          infrastructure = NURSERY + "-" + KINDERGARTEN;
         } else {
           idx = i;
           infrastructure = KINDERGARTEN;
         }
 
-        const nextIdx: number = this._collectNamesAndNumbers(idx, result, infrastructure);
+        const nextIdx: number = this._collectNamesAndNumbers(
+          idx,
+          result,
+          infrastructure,
+        );
         i = nextIdx + 1;
       }
     }
@@ -374,7 +401,7 @@ export class EnhancedStringArray extends Array<EnhancedString> {
     let nextIdx: number = -1;
 
     for (let i = idx - 1; i >= 0; i--) {
-      if (!(this.get(i).endsWithComma())) {
+      if (!this.get(i).endsWithComma()) {
         if (this.get(i).isOrdinalNumber()) {
           if (hasStreetName) streetName.push(this.elements[i]);
           else tempLanes.push(this.elements[i]);
@@ -400,13 +427,15 @@ export class EnhancedStringArray extends Array<EnhancedString> {
 
     if (tempLanes.length) {
       if (hasStreetName && streetName.length) {
-        const strName: string = streetName.reverse().join(' ');
-        for (const lane of tempLanes) result.push(strName + ' ' + STREET + ' ' + lane + ' ' + LANE);
+        const strName: string = streetName.reverse().join(" ");
+        for (const lane of tempLanes)
+          result.push(strName + " " + STREET + " " + lane + " " + LANE);
       } else if (streetName.length) {
-        const strName: string = streetName.reverse().join(' ');
-        for (const lane of tempLanes) result.push(strName + ' ' + lane + ' ' + LANE);
+        const strName: string = streetName.reverse().join(" ");
+        for (const lane of tempLanes)
+          result.push(strName + " " + lane + " " + LANE);
       } else {
-        for (const lane of tempLanes) result.push(lane + ' ' + LANE);
+        for (const lane of tempLanes) result.push(lane + " " + LANE);
       }
     }
 
@@ -424,11 +453,27 @@ export class EnhancedStringArray extends Array<EnhancedString> {
   }
 
   private _parsePluralIndependents(result: string[]) {
-    this._collectInfrastructures(result, EnhancedString.prototype.areStreets, STREET);
-    this._collectInfrastructures(result, EnhancedString.prototype.areDistricts, DISTRICT);
-    this._collectBinarInfrastructures(result, EnhancedString.prototype.areHometowns, HOMETOWN);
+    this._collectInfrastructures(
+      result,
+      EnhancedString.prototype.areStreets,
+      STREET,
+    );
+    this._collectInfrastructures(
+      result,
+      EnhancedString.prototype.areDistricts,
+      DISTRICT,
+    );
+    this._collectDualInfrastructures(
+      result,
+      EnhancedString.prototype.areHometowns,
+      HOMETOWN,
+    );
     this._collectPluralKindergartens(result);
-    this._collectInfrastructures(result, EnhancedString.prototype.areSchools, SCHOOL);
+    this._collectInfrastructures(
+      result,
+      EnhancedString.prototype.areSchools,
+      SCHOOL,
+    );
     this._collectPluralLanes(result);
     this._collectOwners(result);
   }
@@ -437,7 +482,11 @@ export class EnhancedStringArray extends Array<EnhancedString> {
     let prevIdx: number = -1;
 
     for (let i = idx - 1; i >= 0; i--) {
-      if (!(this.get(i).endsWithComma()) && this.get(i).length && !this.get(i).isConjunction()) {
+      if (
+        !this.get(i).endsWithComma() &&
+        this.get(i).length &&
+        !this.get(i).isConjunction()
+      ) {
         streetName.push(this.elements[i]);
         prevIdx = i;
       } else {
@@ -450,13 +499,13 @@ export class EnhancedStringArray extends Array<EnhancedString> {
   }
 
   private _getInfrastructureType(idx: number): string {
-    this.replaceOne(idx, /[,:ը]/, '');
+    this.replaceOne(idx, /[,:ը]/, "");
     let result: string = "";
     if (this.get(idx).areBuildings()) {
       result = BUILDING;
     } else if (this.get(idx).areHouses()) {
       if (this.get(idx).arePrivateHouses(this.get(idx - 1))) {
-        result = PRIVATE + ' ' + HOUSE;
+        result = PRIVATE + " " + HOUSE;
       } else {
         result = this.get(idx).replace(HOUSES, HOUSE).value;
       }
@@ -473,12 +522,12 @@ export class EnhancedStringArray extends Array<EnhancedString> {
     const infrastructure: string = this._getInfrastructureType(end);
     const propNumbers: string[] = [];
     for (let i = start; i < end; i++) {
-      if (!(this.get(i).isConjunction())) {
+      if (!this.get(i).isConjunction()) {
         this.get(i).collectNumericProperties(propNumbers);
       }
     }
 
-    for (const num of propNumbers) properties.push(num + ' ' + infrastructure);
+    for (const num of propNumbers) properties.push(num + " " + infrastructure);
   }
 
   private _collectSingleProperty(
@@ -486,11 +535,11 @@ export class EnhancedStringArray extends Array<EnhancedString> {
     end: number,
     properties: string[],
   ) {
-    this.replaceOne(start, ',', '');
+    this.replaceOne(start, ",", "");
     const infrastructure: string = stringCleaner.clearSuffixes(this.get(end));
 
     if (this.get(start).doesContainNumbers()) {
-      properties.push(this.elements[start] + ' ' + infrastructure);
+      properties.push(this.elements[start] + " " + infrastructure);
     }
   }
 
@@ -542,10 +591,11 @@ export class EnhancedStringArray extends Array<EnhancedString> {
         const nextIdx: number = this._parseProperties(i, properties);
 
         if (streetName.length > 1) {
-          const street: string = streetName.reverse().join(' ');
+          const street: string = streetName.reverse().join(" ");
           streetName.length = 0;
           if (properties.length) {
-            for (const property of properties) result.push(street + ' ' + property);
+            for (const property of properties)
+              result.push(street + " " + property);
             properties.length = 0;
           } else {
             result.push(street);
@@ -557,7 +607,7 @@ export class EnhancedStringArray extends Array<EnhancedString> {
     }
   }
 
-  private _parseAdresses(): string[] {
+  private _parseAddresses(): string[] {
     const result: string[] = [];
 
     this._parsePluralIndependents(result);
@@ -566,9 +616,16 @@ export class EnhancedStringArray extends Array<EnhancedString> {
     const remainingText: string = stringCleaner.cleanUpAfterInitialProcessing(this);
     const remainingSingleAddresses: string =
       this._parseStreetWithoutWordStreet(remainingText, result);
+    const remainingText: string =
+      stringCleaner.cleanUpAfterInitialProcessing(this);
+    const remainingSingleAddresses: string = this._parseStreetWithoutWordStreet(
+      remainingText,
+      result,
+    );
 
-    const restProcessedAddresses: string[] = stringCleaner
-      .processRemainingText(remainingSingleAddresses);
+    const restProcessedAddresses: string[] = stringCleaner.processRemainingText(
+      remainingSingleAddresses,
+    );
     result.push(...restProcessedAddresses);
 
     return result;
@@ -577,17 +634,25 @@ export class EnhancedStringArray extends Array<EnhancedString> {
   private _collectStreetsAndBuildings(idx: number, nextIdx: number): string[] {
     const addresses: string[] = [];
 
-    const streetsAndBuildings: string[] = this.slice(idx, nextIdx)._parseAdresses();
+    const streetsAndBuildings: string[] = this.slice(
+      idx,
+      nextIdx,
+    )._parseAddresses();
     if (streetsAndBuildings.length) addresses.push(...streetsAndBuildings);
 
     return addresses;
   }
 
-  private _parseStreetWithoutWordStreet(text: string, result: string[]): string {
+  private _parseStreetWithoutWordStreet(
+    text: string,
+    result: string[],
+  ): string {
     if (!text || text[0] === text[0].toLowerCase()) return text;
 
-    const splittedText: string[] = text.split(' ').filter(str => str.length);
-    const enhancedText: EnhancedStringArray = new EnhancedStringArray(splittedText);
+    const splittedText: string[] = text.split(" ").filter((str) => str.length);
+    const enhancedText: EnhancedStringArray = new EnhancedStringArray(
+      splittedText,
+    );
     const streetName: string[] = [];
     const properties: string[] = [];
     let startIdx: number = 0;
@@ -602,14 +667,21 @@ export class EnhancedStringArray extends Array<EnhancedString> {
     enhancedText.slice(0, startIdx + 2)._parseStreetName(startIdx, streetName);
 
     for (let i = enhancedText.length - 1; i >= startIdx; i--) {
-      if (enhancedText.get(i).areBuildings() || enhancedText.get(i).areHouses()) {
+      if (
+        enhancedText.get(i).areBuildings() ||
+        enhancedText.get(i).areHouses()
+      ) {
         enhancedText._collectMultipleProperties(startIdx, i, properties);
-        stringCleaner.removeParsedWords(enhancedText, startIdx - properties.length, i);
+        stringCleaner.removeParsedWords(
+          enhancedText,
+          startIdx - properties.length,
+          i,
+        );
       }
     }
 
-    for (const prop of properties) result.push(streetName + ' ' + prop);
+    for (const prop of properties) result.push(streetName + " " + prop);
     const res: string[] = enhancedText.filterNotEmpties();
-    return res.join(' ');
+    return res.join(" ");
   }
 }

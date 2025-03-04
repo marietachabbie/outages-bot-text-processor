@@ -45,7 +45,7 @@ export class EnhancedString {
   }
 
   clean() {
-    this._value = '';
+    this._value = "";
   }
 
   add(char: string) {
@@ -58,7 +58,7 @@ export class EnhancedString {
   }
 
   clearCommas(): EnhancedString {
-    return this.replace(',', '');
+    return this.replace(",", "");
   }
 
   getStreetType(): string {
@@ -67,7 +67,7 @@ export class EnhancedString {
   }
 
   endsWithComma(): boolean {
-    return this._value.endsWith(',');
+    return this._value.endsWith(",");
   }
 
   isHourRange(): boolean {
@@ -76,7 +76,7 @@ export class EnhancedString {
   }
 
   isPlural(): boolean {
-    const word: string = this._value.replace(/[.,ը]/g, '');
+    const word: string = this._value.replace(/[.,ը]/g, "");
     return word.endsWith("եր");
   }
 
@@ -105,32 +105,40 @@ export class EnhancedString {
   }
 
   isCity(): boolean {
-    return this._value === CITY ||
+    return (
+      this._value === CITY ||
       this._value === CITY + "ը" ||
       this._value === CITY + "ի" ||
-      this._value === CITY + "ում";
+      this._value === CITY + "ում"
+    );
   }
 
   isVillage(): boolean {
-    return this._value === VILLAGE ||
+    return (
+      this._value === VILLAGE ||
       this._value === VILLAGE + "ը" ||
       this._value === VILLAGE + "ի" ||
-      this._value === VILLAGE + "ում";
+      this._value === VILLAGE + "ում"
+    );
   }
 
   isCommunity(): boolean {
-    return this._value === COMMUNITY ||
+    return (
+      this._value === COMMUNITY ||
       this._value === COMMUNITY + "ը" ||
       this._value === COMMUNITY + "ի" ||
-      this._value === COMMUNITY + "ում";
+      this._value === COMMUNITY + "ում"
+    );
   }
 
   isConjunction(): boolean {
-    return this._value === 'և' || this._value === 'եւ' || this._value === 'ու';
+    return this._value === "և" || this._value === "եւ" || this._value === "ու";
   }
 
   isPartOfVillageName(): boolean {
-    return this.startsWithUppercase() || LOWERCASE_VILLAGE_NAMES.has(this._value);
+    return (
+      this.startsWithUppercase() || LOWERCASE_VILLAGE_NAMES.has(this._value)
+    );
   }
 
   isNurserySchool(): boolean {
@@ -138,20 +146,22 @@ export class EnhancedString {
   }
 
   isStreet(): boolean {
-    const word: string = this._value.replace(/[.,ը]/g, '');
+    const word: string = this._value.replace(/[.,ը]/g, "");
     return word === STREET || word === STREET.slice(0, 3) || word === STREET[0];
   }
 
   isAvenue(): boolean {
-    const word: string = this._value.replace(/[.,ն]/g, '');
+    const word: string = this._value.replace(/[.,ն]/g, "");
     return word === AVENUE || word === AVENUE.slice(0, 3) || word === AVENUE[0];
   }
 
   areVillages(): boolean {
-    return this._value === VILLAGES ||
+    return (
+      this._value === VILLAGES ||
       this._value === VILLAGES + "ը" ||
       this._value === VILLAGES + "ի" ||
-      this._value === VILLAGES + "ում";
+      this._value === VILLAGES + "ում"
+    );
   }
 
   areStreets(): boolean {
@@ -167,9 +177,11 @@ export class EnhancedString {
   }
 
   areHometowns(prev?: EnhancedString): boolean {
-    const word: string = prev?._value.replace(/[.,ը]/, '') || '';
-    const [ HOME, TOWNS ] = HOMETOWNS.split(' ');
-    return (word === HOME || word === HOME.slice(0, 2)) && this._value === TOWNS;
+    const word: string = prev?._value.replace(/[.,ը]/, "") || "";
+    const [ HOME, TOWNS ] = HOMETOWNS.split(" ");
+    return (
+      (word === HOME || word === HOME.slice(0, 2)) && this._value === TOWNS
+    );
   }
 
   areHouses(): boolean {
@@ -201,7 +213,10 @@ export class EnhancedString {
   }
 
   shouldIgnore(): boolean {
-    return !this._value.length || WORDS_TO_IGNORE.has(this._value.replace(/[-:,ը]/g, '').trim());
+    return (
+      !this._value.length ||
+      WORDS_TO_IGNORE.has(this._value.replace(/[-:,ը]/g, "").trim())
+    );
   }
 
   startsWithUppercase(): boolean {
@@ -213,11 +228,11 @@ export class EnhancedString {
   }
 
   startsWithQuote(): boolean {
-    return this._value.startsWith('«');
+    return this._value.startsWith("«");
   }
 
   endsWithQuote(): boolean {
-    return this._value.endsWith('»');
+    return this._value.endsWith("»");
   }
 
   doesNotContainNumbers(): boolean {
@@ -231,21 +246,20 @@ export class EnhancedString {
 
   didAddressEnd(): boolean {
     const punctuationRegex = /^[\p{P}\p{S}]$/u;
-    return !this._value ||
-      this._value.endsWith(':') ||
-      this._value.endsWith(',') ||
+    return (
+      !this._value ||
+      this._value.endsWith(":") ||
+      this._value.endsWith(",") ||
       this.isConjunction() ||
-      (
-        !punctuationRegex.test(this._value[0]) &&
-          this.startsWithLowercase()
-      );
+      (!punctuationRegex.test(this._value[0]) && this.startsWithLowercase())
+    );
   }
 
   collectNumericProperties(numbers: string[]) {
     const word: EnhancedString = this.clearCommas();
     if (word.doesContainNumbers()) {
-      if (word.value.includes('-')) {
-        const parts: string[] = word.value.split('-');
+      if (word.value.includes("-")) {
+        const parts: string[] = word.value.split("-");
         if (parts.length === 2) {
           for (let i = parseInt(parts[0]); i <= parseInt(parts[1]); i++) {
             numbers.push(i.toString());
