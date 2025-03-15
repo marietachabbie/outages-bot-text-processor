@@ -257,19 +257,15 @@ export class EnhancedString {
 
   collectNumericProperties(numbers: string[]) {
     const word: EnhancedString = this.clearCommas();
-    if (word.doesContainNumbers()) {
-      if (word.value.includes("-")) {
-        const parts: string[] = word.value.split("-");
-        if (parts.length === 2) {
-          for (let i = parseInt(parts[0]); i <= parseInt(parts[1]); i++) {
-            numbers.push(i.toString());
-          }
-
-          if (numbers[numbers.length - 1] !== parts[1]) numbers.push(parts[1]);
+    if (word.value.includes("-")) {
+      const parts: string[] = word.value.split("-");
+      if (parts.length === 2) {
+        for (let i = parseInt(parts[0]); i <= parseInt(parts[1]); i++) {
+          numbers.push(i.toString());
         }
-      } else {
-        numbers.push(word.value);
       }
+    } else {
+      numbers.push(word.value);
     }
   }
 }

@@ -186,6 +186,39 @@ describe("EnhancedStringArray", () => {
     });
   });
 
+  describe("private methods", () => {
+    // TODO: fix this
+    test("_collectInfrastructures", () => {
+      const text = new EnhancedStringArray([
+        "Մայակ,",
+        "Բանավան",
+        "և",
+        "Բագրևանդ",
+        "2,",
+        "3",
+        "փողոցներ,",
+      ]);
+
+      const result: string[] = [];
+      const output: string[] = [
+        "Բագրևանդ 3 փողոց",
+        "Բագրևանդ 2 փողոց",
+        "Բանավան փողոց",
+        "Մայակ փողոց",
+      ];
+
+      // @ts-expect-error: Force access to the private method
+      text._collectInfrastructures(
+        result,
+        EnhancedString.prototype.areStreets,
+        "փողոց",
+      );
+
+      const allEmpty = text.every(word => word.isEmpty());
+
+      expect(result).toStrictEqual(output);
+      expect(allEmpty).toBe(true);
+    });
 
     test("_collectInfrastructures collects non-numerical names for plural infrastructures", () => {
       const text = new EnhancedStringArray([

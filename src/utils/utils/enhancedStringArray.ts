@@ -178,14 +178,12 @@ export class EnhancedStringArray extends Array<EnhancedString> {
     result: string[],
     infrastructure: string,
   ): number {
-    const singleNameTemp: string[] = [];
-    const singleNameListTemp: string[] = [];
-    const multipleNameListTemp: string[] = [];
-    const numericalNamesTemp: string[] = [];
-    let numericsExist: boolean = false;
+    const currentName: string[] = [];
+    const currentNumbers: string[] = [];
+    const multipleNamesList: string[] = [];
     let nextIdx: number = -1;
 
-    for (let i = idx - 1; i >= 0; i--) {
+    for (let i = idx -1; i >= 0; i--) {
       if (this.get(i).shouldIgnore() || this.get(i).isConjunction()) {
         continue;
       }
@@ -193,14 +191,16 @@ export class EnhancedStringArray extends Array<EnhancedString> {
       const word: EnhancedString = this.get(i).replace(/[(),]/g, "");
       if (word.doesNotContainNumbers()) {
         if (word.startsWithUppercase() || word.value === NUMBER) {
-          singleNameTemp.push(word.value);
+          currentName.push(word.value);
           if (this.get(i - 1).didAddressEnd()) {
-            if (numericsExist) {
-              singleNameListTemp.push(singleNameTemp.reverse().join(" "));
-              singleNameTemp.length = 0;
+            const currentNameTemp = currentName.reverse().join(" ");
+            if (currentNumbers.length) {
+              currentNumbers.forEach(num => multipleNamesList.push(currentNameTemp + " " + num));
+              currentName.length = 0;
+              currentNumbers.length = 0;
             } else {
-              multipleNameListTemp.push(singleNameTemp.reverse().join(" "));
-              singleNameTemp.length = 0;
+              multipleNamesList.push(currentNameTemp);
+              currentName.length = 0;
             }
           }
         } else {
@@ -208,27 +208,18 @@ export class EnhancedStringArray extends Array<EnhancedString> {
           break;
         }
       } else {
-        this.get(i).collectNumericProperties(numericalNamesTemp);
-        if (numericalNamesTemp.length) numericsExist = true;
+        this.get(i).collectNumericProperties(currentNumbers);
       }
     }
 
-    let singleNameListStr: string = "";
-    if (singleNameListTemp.length) {
+    if (multipleNamesList.length) {
       if (nextIdx === -1) nextIdx = 0;
-      singleNameListStr = singleNameListTemp.join(" ") + " ";
-    }
-
-    if (numericsExist) {
-      if (nextIdx === -1) nextIdx = 0;
-      numericalNamesTemp.forEach(num =>
-        result.push(singleNameListStr + num + " " + infrastructure),
-      );
-    } else if (multipleNameListTemp.length) {
-      if (nextIdx === -1) nextIdx = 0;
-      multipleNameListTemp.forEach(name =>
+      multipleNamesList.forEach(name =>
         result.push(name + " " + infrastructure),
       );
+    } else if (currentNumbers.length) {
+      if (nextIdx === -1) nextIdx = 0;
+      currentNumbers.forEach(num => result.push(num + " " + infrastructure));
     }
 
     if (nextIdx >= 0) stringCleaner.removeParsedWords(this, nextIdx, idx);
