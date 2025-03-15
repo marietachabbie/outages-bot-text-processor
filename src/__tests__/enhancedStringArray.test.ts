@@ -493,5 +493,60 @@ describe("EnhancedStringArray", () => {
       expect(result).toStrictEqual(output);
       expect(allEmpty).toBe(true);
     });
+
+    test("_parseStreetsAndProperties parses street without properties", () => {
+      const text = new EnhancedStringArray([
+        "Սաֆարյան",
+        "փ.",
+      ]);
+
+      const result: string[] = [];
+      const output: string[] = [ "Սաֆարյան փողոց" ];
+
+      // @ts-expect-error: Force access to the private method
+      text._parseStreetsAndProperties(result);
+
+      expect(result).toStrictEqual(output);
+    });
+
+    test("_parseStreetsAndProperties parses street with a property", () => {
+      const text = new EnhancedStringArray([
+        "Սաֆարյան",
+        "փ.",
+        "12",
+        "շենք",
+      ]);
+
+      const result: string[] = [];
+      const output: string[] = [ "Սաֆարյան փողոց 12 շենք" ];
+
+      // @ts-expect-error: Force access to the private method
+      text._parseStreetsAndProperties(result);
+
+      expect(result).toStrictEqual(output);
+    });
+
+    test("_parseStreetsAndProperties parses street with properties", () => {
+      const text = new EnhancedStringArray([
+        "Սաֆարյան",
+        "փ.",
+        "12,",
+        "24,",
+        "34",
+        "շենքեր",
+      ]);
+
+      const result: string[] = [];
+      const output: string[] = [
+        "Սաֆարյան փողոց 12 շենք",
+        "Սաֆարյան փողոց 24 շենք",
+        "Սաֆարյան փողոց 34 շենք",
+      ];
+
+      // @ts-expect-error: Force access to the private method
+      text._parseStreetsAndProperties(result);
+
+      expect(result).toStrictEqual(output);
+    });
   });
 });
