@@ -585,8 +585,7 @@ export class EnhancedStringArray extends Array<EnhancedString> {
           const street: string = streetName.reverse().join(" ");
           streetName.length = 0;
           if (properties.length) {
-            for (const property of properties)
-              result.push(street + " " + property);
+            properties.forEach((prop) => result.push(street + " " + prop));
             properties.length = 0;
           } else {
             result.push(street);

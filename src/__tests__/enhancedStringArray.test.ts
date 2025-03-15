@@ -453,5 +453,45 @@ describe("EnhancedStringArray", () => {
       expect(allStrEmpty).toBe(true);
       expect(allAveEmpty).toBe(true);
     });
+
+    test("_parseProperties parses single property", () => {
+      const text = new EnhancedStringArray([
+        "",
+        "",
+        "20/4",
+        "շենք",
+      ]);
+
+      const result: string[] = [];
+      const output: string[] = [ "20/4 շենք" ];
+
+      // @ts-expect-error: Force access to the private method
+      text._parseProperties(1, result);
+      const allEmpty = text.every(word => word.isEmpty());
+
+      expect(result).toStrictEqual(output);
+      expect(allEmpty).toBe(true);
+    });
+
+    test("_parseProperties parses multiple properties", () => {
+      const text = new EnhancedStringArray([
+        "",
+        "",
+        "20/4",
+        "34",
+        "62",
+        "շենքեր",
+      ]);
+
+      const result: string[] = [];
+      const output: string[] = [ "20/4 շենք", "34 շենք", "62 շենք" ];
+
+      // @ts-expect-error: Force access to the private method
+      text._parseProperties(1, result);
+      const allEmpty = text.every(word => word.isEmpty());
+
+      expect(result).toStrictEqual(output);
+      expect(allEmpty).toBe(true);
+    });
   });
 });
