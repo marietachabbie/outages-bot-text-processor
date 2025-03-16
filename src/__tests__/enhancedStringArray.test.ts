@@ -187,7 +187,6 @@ describe("EnhancedStringArray", () => {
   });
 
   describe("private methods", () => {
-    // TODO: fix this
     test("_collectInfrastructures", () => {
       const text = new EnhancedStringArray([
         "Մայակ,",
@@ -400,8 +399,8 @@ describe("EnhancedStringArray", () => {
       expect(allEmpty).toBe(true);
     });
 
-    test("_parseStreetName parses street/avenue name", () => {
-      const textStreet = new EnhancedStringArray([
+    test("_parseStreetName parses street name", () => {
+      const text = new EnhancedStringArray([
         "բառ,",
         "Նոր",
         "Նորք",
@@ -415,19 +414,8 @@ describe("EnhancedStringArray", () => {
         "շենքեր",
       ]);
 
-      const textAvenue = new EnhancedStringArray([
-        "բառ,",
-        "Մյասնիկյան",
-        "պող.",
-        "20/4,",
-        "15/5",
-        "շենքեր,",
-      ]);
-
       const streetName: string[] = [];
-      const avenueName: string[] = [];
-      const avenueOutput: string[] = [ "Մյասնիկյան" ];
-      const streetOutput: string[] = [
+      const output: string[] = [
         "Սաֆարյան",
         "Ս․",
         "զանգ.",
@@ -437,21 +425,38 @@ describe("EnhancedStringArray", () => {
       ];
 
       // @ts-expect-error: Force access to the private method
-      textStreet._parseStreetName(7, streetName);
-      // @ts-expect-error: Force access to the private method
-      textAvenue._parseStreetName(2, avenueName);
+      text._parseStreetName(7, streetName);
 
-      const allStrEmpty = textStreet
+      const allEmpty = text
         .slice(1, 8)
         .every((word) => word.isEmpty());
-      const allAveEmpty = textAvenue
+
+      expect(streetName).toStrictEqual(output);
+      expect(allEmpty).toBe(true);
+    });
+
+    test("_parseStreetName parses avenue name", () => {
+      const text = new EnhancedStringArray([
+        "բառ,",
+        "Մյասնիկյան",
+        "պող.",
+        "20/4,",
+        "15/5",
+        "շենքեր,",
+      ]);
+
+      const avenueName: string[] = [];
+      const output: string[] = [ "Մյասնիկյան" ];
+
+      // @ts-expect-error: Force access to the private method
+      text._parseStreetName(2, avenueName);
+
+      const allEmpty = text
         .slice(1, 3)
         .every((word) => word.isEmpty());
 
-      expect(streetName).toStrictEqual(streetOutput);
-      expect(avenueName).toStrictEqual(avenueOutput);
-      expect(allStrEmpty).toBe(true);
-      expect(allAveEmpty).toBe(true);
+      expect(avenueName).toStrictEqual(output);
+      expect(allEmpty).toBe(true);
     });
 
     test("_parseProperties parses single property", () => {

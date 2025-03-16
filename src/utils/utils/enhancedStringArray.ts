@@ -327,7 +327,7 @@ export class EnhancedStringArray extends Array<EnhancedString> {
       }
     }
 
-    for (const name of ownerNames) result.push(name + " " + OWNER);
+    ownerNames.forEach(name => result.push(name + " " + OWNER));
     return [ firstIdx, lastIdx ];
   }
 
@@ -419,14 +419,18 @@ export class EnhancedStringArray extends Array<EnhancedString> {
     if (tempLanes.length) {
       if (hasStreetName && streetName.length) {
         const strName: string = streetName.reverse().join(" ");
-        for (const lane of tempLanes)
-          result.push(strName + " " + STREET + " " + lane + " " + LANE);
+        tempLanes.forEach(lane =>
+          result.push(strName + " " + STREET + " " + lane + " " + LANE),
+        );
       } else if (streetName.length) {
         const strName: string = streetName.reverse().join(" ");
-        for (const lane of tempLanes)
-          result.push(strName + " " + lane + " " + LANE);
+        tempLanes.forEach(lane =>
+          result.push(strName + " " + lane + " " + LANE),
+        );
       } else {
-        for (const lane of tempLanes) result.push(lane + " " + LANE);
+        tempLanes.forEach(lane =>
+          result.push(lane + " " + LANE),
+        );
       }
     }
 
@@ -449,23 +453,29 @@ export class EnhancedStringArray extends Array<EnhancedString> {
       EnhancedString.prototype.areStreets,
       STREET,
     );
+
     this._collectInfrastructures(
       result,
       EnhancedString.prototype.areDistricts,
       DISTRICT,
     );
+
     this._collectDualInfrastructures(
       result,
       EnhancedString.prototype.areHometowns,
       HOMETOWN,
     );
+
     this._collectPluralKindergartens(result);
+
     this._collectInfrastructures(
       result,
       EnhancedString.prototype.areSchools,
       SCHOOL,
     );
+
     this._collectPluralLanes(result);
+
     this._collectOwners(result);
   }
 
@@ -518,7 +528,9 @@ export class EnhancedStringArray extends Array<EnhancedString> {
       }
     }
 
-    for (const num of propNumbers) properties.push(num + " " + infrastructure);
+    propNumbers.forEach(num =>
+      properties.push(num + " " + infrastructure),
+    );
   }
 
   private _collectSingleProperty(
@@ -603,9 +615,6 @@ export class EnhancedStringArray extends Array<EnhancedString> {
     this._parsePluralIndependents(result);
     this._parseStreetsAndProperties(result);
 
-    const remainingText: string = stringCleaner.cleanUpAfterInitialProcessing(this);
-    const remainingSingleAddresses: string =
-      this._parseStreetWithoutWordStreet(remainingText, result);
     const remainingText: string =
       stringCleaner.cleanUpAfterInitialProcessing(this);
     const remainingSingleAddresses: string = this._parseStreetWithoutWordStreet(
@@ -670,7 +679,10 @@ export class EnhancedStringArray extends Array<EnhancedString> {
       }
     }
 
-    for (const prop of properties) result.push(streetName + " " + prop);
+    properties.forEach(prop =>
+      result.push(streetName + " " + prop),
+    );
+
     const res: string[] = enhancedText.filterNotEmpties();
     return res.join(" ");
   }
