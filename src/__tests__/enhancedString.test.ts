@@ -22,6 +22,7 @@ describe("Enhanced string", () => {
     const prev = new EnhancedString("");
     const curr = new EnhancedString("բառ");
     const next = new EnhancedString("");
+
     expect(curr.isLonelyWord(prev, next)).toBe(true);
   });
 
@@ -29,6 +30,7 @@ describe("Enhanced string", () => {
     const prev = new EnhancedString("");
     const curr = new EnhancedString("բառ");
     const next = new EnhancedString("և");
+
     expect(curr.isLonelyWord(prev, next)).toBe(true);
   });
 
@@ -40,6 +42,7 @@ describe("Enhanced string", () => {
   test("isOrdinalNumber validates ordinal numbers", () => {
     const first = new EnhancedString("1-ին");
     const second = new EnhancedString("2-րդ");
+
     expect(first.isOrdinalNumber()).toBe(true);
     expect(second.isOrdinalNumber()).toBe(true);
   });

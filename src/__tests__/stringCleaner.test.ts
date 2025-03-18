@@ -23,6 +23,7 @@ describe("String cleaner", () => {
   test("clearPluralSuffix clears plural suffixes", () => {
     const word: string = "ճարտարապետներ";
     const output: EnhancedString = new EnhancedString("ճարտարապետ");
+
     expect(stringCleaner.clearPluralSuffix(word)).toStrictEqual(output);
   });
 
@@ -65,23 +66,38 @@ describe("String cleaner", () => {
       "մարզադպրոց",
     ]);
 
-    const output: string = "Ադոնցի նրբանցք, Արամ Մանուկյան փողոց, թիվ 152 մարզադպրոց,";
-    expect(stringCleaner.cleanUpAfterInitialProcessing(input)).toBe(output);
+    const expectedOutput: string = "Ադոնցի նրբանցք, Արամ Մանուկյան փողոց, թիվ 152 մարզադպրոց,";
+    expect(stringCleaner.cleanUpAfterInitialProcessing(input)).toBe(
+      expectedOutput
+    );
   });
 
   test("processRemainingText cleans up the text and splits by commas", () => {
     const text: string = " Ադոնցի նրբանցք,  Արամ Մանուկյան փողոց,  թիվ 152 մարզադպրոց,";
-    const output: string[] = [ "Ադոնցի նրբանցք", "Արամ Մանուկյան փողոց", "թիվ 152 մարզադպրոց" ];
-    expect(stringCleaner.processRemainingText(text)).toStrictEqual(output);
+    const expectedOutput: string[] = [
+      "Ադոնցի նրբանցք",
+      "Արամ Մանուկյան փողոց",
+      "թիվ 152 մարզադպրոց",
+    ];
+
+    expect(stringCleaner.processRemainingText(text)).toStrictEqual(
+      expectedOutput
+    );
   });
 
   test("clearInvalidParenthesis clears invalid parenthesis", () => {
     const text: string = "Ախուրյանի խճուղի)";
-    expect(stringCleaner.clearInvalidParenthesis(text)).toBe("Ախուրյանի խճուղի");
+
+    expect(stringCleaner.clearInvalidParenthesis(text)).toBe(
+      "Ախուրյանի խճուղի"
+    );
   });
 
   test("clearInvalidParenthesis DOES NOT clear valid parenthesis", () => {
     const text: string = "(Ախուրյանի խճուղի)";
-    expect(stringCleaner.clearInvalidParenthesis(text)).toBe("(Ախուրյանի խճուղի)");
+
+    expect(stringCleaner.clearInvalidParenthesis(text)).toBe(
+      "(Ախուրյանի խճուղի)"
+    );
   });
 });

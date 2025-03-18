@@ -36,18 +36,18 @@ describe("EnhancedStringArray", () => {
 
     test("filterNotEmpties filters not empty values", () => {
       const text = new EnhancedStringArray([ "", "", "բառ", "բառեր", "" ]);
-      const output = [ "բառ", "բառեր" ];
+      const expectedOutput = [ "բառ", "բառեր" ];
       const cleared = text.filterNotEmpties();
 
-      expect(cleared).toStrictEqual(output);
+      expect(cleared).toStrictEqual(expectedOutput);
     });
 
     test("filterNotHourRanges filters words that are NOT hour range", () => {
       const text = new EnhancedStringArray([ "12:00-13:00", "բառ", "բառեր" ]);
-      const output = new EnhancedStringArray([ "բառ", "բառեր" ]);
+      const expectedOutput = new EnhancedStringArray([ "բառ", "բառեր" ]);
       const cleared = text.filterNotHourRanges();
 
-      expect(cleared).toStrictEqual(output);
+      expect(cleared).toStrictEqual(expectedOutput);
     });
 
     test("collectAddresses collects addresses for single village", () => {
@@ -66,7 +66,7 @@ describe("EnhancedStringArray", () => {
 
       const province = "Արարատ";
       const announcements: TRegionalData = {};
-      const output: TRegionalData = {
+      const expectedOutput: TRegionalData = {
         Արարատ: {
           "Արարատ գյուղ": [
             "«Արարատ կաթ» ՍՊԸ",
@@ -77,7 +77,7 @@ describe("EnhancedStringArray", () => {
       };
 
       text.collectAddresses(province as TProvince, announcements);
-      expect(announcements).toStrictEqual(output);
+      expect(announcements).toStrictEqual(expectedOutput);
     });
 
     test("collectAddresses collects addresses for single city", () => {
@@ -93,14 +93,14 @@ describe("EnhancedStringArray", () => {
 
       const province = "Սյունիք";
       const announcements: TRegionalData = {};
-      const output: TRegionalData = {
+      const expectedOutput: TRegionalData = {
         Սյունիք: {
           "Քաջարան քաղաք": [ "Գայի պողոտա 1 շենք", "Գայի պողոտա 2 շենք" ],
         },
       };
 
       text.collectAddresses(province as TProvince, announcements);
-      expect(announcements).toStrictEqual(output);
+      expect(announcements).toStrictEqual(expectedOutput);
     });
 
     test("collectAddresses collects addresses for multiple villages", () => {
@@ -114,7 +114,7 @@ describe("EnhancedStringArray", () => {
 
       const province = "Վայոց Ձոր";
       const announcements: TRegionalData = {};
-      const output: TRegionalData = {
+      const expectedOutput: TRegionalData = {
         "Վայոց Ձոր": {
           "Բարձրունի գյուղ": [],
           "Մարտիրոս գյուղ": [],
@@ -123,7 +123,7 @@ describe("EnhancedStringArray", () => {
       };
 
       text.collectAddresses(province as TProvince, announcements);
-      expect(announcements).toStrictEqual(output);
+      expect(announcements).toStrictEqual(expectedOutput);
     });
 
     test("collectAddresses collects addresses for multiple cities", () => {
@@ -137,7 +137,7 @@ describe("EnhancedStringArray", () => {
 
       const province = "Արմավիր";
       const announcements: TRegionalData = {};
-      const output: TRegionalData = {
+      const expectedOutput: TRegionalData = {
         Արմավիր: {
           "Արմավիր քաղաք": [],
           "Էջմիածին քաղաք": [],
@@ -146,7 +146,7 @@ describe("EnhancedStringArray", () => {
       };
 
       text.collectAddresses(province as TProvince, announcements);
-      expect(announcements).toStrictEqual(output);
+      expect(announcements).toStrictEqual(expectedOutput);
     });
 
     test("collectAddresses collects unidentified addresses in OTHER", () => {
@@ -169,7 +169,7 @@ describe("EnhancedStringArray", () => {
 
       const province = "Արմավիր";
       const announcements: TRegionalData = {};
-      const output: TRegionalData = {
+      const expectedOutput: TRegionalData = {
         Արմավիր: {
           "Արմավիր քաղաք": [],
           "Էջմիածին քաղաք": [],
@@ -182,7 +182,7 @@ describe("EnhancedStringArray", () => {
       };
 
       text.collectAddresses(province as TProvince, announcements);
-      expect(announcements).toStrictEqual(output);
+      expect(announcements).toStrictEqual(expectedOutput);
     });
   });
 
@@ -198,8 +198,8 @@ describe("EnhancedStringArray", () => {
         "փողոցներ,",
       ]);
 
-      const result: string[] = [];
-      const output: string[] = [
+      const output: string[] = [];
+      const expectedOutput: string[] = [
         "Բագրևանդ 3 փողոց",
         "Բագրևանդ 2 փողոց",
         "Բանավան փողոց",
@@ -208,14 +208,14 @@ describe("EnhancedStringArray", () => {
 
       // @ts-expect-error: Force access to the private method
       text._collectInfrastructures(
-        result,
+        output,
         EnhancedString.prototype.areStreets,
         "փողոց",
       );
 
       const allEmpty = text.every(word => word.isEmpty());
 
-      expect(result).toStrictEqual(output);
+      expect(output).toStrictEqual(expectedOutput);
       expect(allEmpty).toBe(true);
     });
 
@@ -228,8 +228,8 @@ describe("EnhancedStringArray", () => {
         "թաղամասեր,",
       ]);
 
-      const result: string[] = [];
-      const output: string[] = [
+      const output: string[] = [];
+      const expectedOutput: string[] = [
         "Բագրևանդ թաղամաս",
         "Բանավան թաղամաս",
         "Մայակ թաղամաս",
@@ -237,13 +237,13 @@ describe("EnhancedStringArray", () => {
 
       // @ts-expect-error: Force access to the private method
       text._collectInfrastructures(
-        result,
+        output,
         EnhancedString.prototype.areDistricts,
         "թաղամաս",
       );
       const allEmpty = text.every(word => word.isEmpty());
 
-      expect(result).toStrictEqual(output);
+      expect(output).toStrictEqual(expectedOutput);
       expect(allEmpty).toBe(true);
     });
 
@@ -256,18 +256,18 @@ describe("EnhancedStringArray", () => {
         "դպրոցներ,",
       ]);
 
-      const result: string[] = [];
-      const output: string[] = [ "թիվ 123 դպրոց", "թիվ 122 դպրոց" ];
+      const output: string[] = [];
+      const expectedOutput: string[] = [ "թիվ 123 դպրոց", "թիվ 122 դպրոց" ];
 
       // @ts-expect-error: Force access to the private method
       text._collectInfrastructures(
-        result,
+        output,
         EnhancedString.prototype.areSchools,
         "դպրոց",
       );
       const allEmpty = text.every((word) => word.isEmpty());
 
-      expect(result).toStrictEqual(output);
+      expect(output).toStrictEqual(expectedOutput);
       expect(allEmpty).toBe(true);
     });
 
@@ -280,8 +280,8 @@ describe("EnhancedStringArray", () => {
         "ավաններ",
       ]);
 
-      const result: string[] = [];
-      const output: string[] = [
+      const output: string[] = [];
+      const expectedOutput: string[] = [
         "154 տնակային ավան",
         "153 տնակային ավան",
         "142 տնակային ավան",
@@ -289,13 +289,13 @@ describe("EnhancedStringArray", () => {
 
       // @ts-expect-error: Force access to the private method
       text._collectDualInfrastructures(
-        result,
+        output,
         EnhancedString.prototype.areHometowns,
         "տնակային ավան",
       );
       const allEmpty = text.every((word) => word.isEmpty());
 
-      expect(result).toStrictEqual(output);
+      expect(output).toStrictEqual(expectedOutput);
       expect(allEmpty).toBe(true);
     });
 
@@ -310,8 +310,8 @@ describe("EnhancedStringArray", () => {
       ]);
 
       // @ts-expect-error: Force access to the private method
-      const result = text._getStartOfOwnersList(5);
-      expect(result).toBe(0);
+      const output = text._getStartOfOwnersList(5);
+      expect(output).toBe(0);
     });
 
     test("_collectPluralKindergartens collects numerical names for kindergartens", () => {
@@ -324,17 +324,17 @@ describe("EnhancedStringArray", () => {
         "մանկապարտեզներ",
       ]);
 
-      const result: string[] = [];
-      const output: string[] = [
+      const output: string[] = [];
+      const expectedOutput: string[] = [
         "թիվ 154 մսուր-մանկապարտեզ",
         "թիվ 153 մսուր-մանկապարտեզ",
       ];
 
       // @ts-expect-error: Force access to the private method
-      text._collectPluralKindergartens(result);
+      text._collectPluralKindergartens(output);
       const allEmpty = text.every(word => word.isEmpty());
 
-      expect(result).toStrictEqual(output);
+      expect(output).toStrictEqual(expectedOutput);
       expect(allEmpty).toBe(true);
     });
 
@@ -349,17 +349,17 @@ describe("EnhancedStringArray", () => {
         "նրբանցքների",
       ]);
 
-      const result: string[] = [];
-      const output: string[] = [
+      const output: string[] = [];
+      const expectedOutput: string[] = [
         "Նորագավիթ 1 փողոց 2–րդ նրբանցք",
         "Նորագավիթ 1 փողոց 1-ին նրբանցք",
       ];
 
       // @ts-expect-error: Force access to the private method
-      text._collectPluralLanes(result);
+      text._collectPluralLanes(output);
       const allEmpty = text.every(word => word.isEmpty());
 
-      expect(result).toStrictEqual(output);
+      expect(output).toStrictEqual(expectedOutput);
       expect(allEmpty).toBe(true);
     });
 
@@ -373,18 +373,18 @@ describe("EnhancedStringArray", () => {
         "Պողոսյան»",
       ]);
 
-      const result: string[] = [];
-      const output: string[] = [
+      const output: string[] = [];
+      const expectedOutput: string[] = [
         "«Վ․Սահակյան» սեփականատեր",
         "«Լիլիթ Սահակյան» սեփականատեր",
         "«Գայանե Պողոսյան» սեփականատեր",
       ];
 
       // @ts-expect-error: Force access to the private method
-      text._collectOwners(result);
+      text._collectOwners(output);
       const allEmpty = text.every(word => word.isEmpty());
 
-      expect(result).toStrictEqual(output);
+      expect(output).toStrictEqual(expectedOutput);
       expect(allEmpty).toBe(true);
     });
 
@@ -399,18 +399,18 @@ describe("EnhancedStringArray", () => {
         "Սեփականատերեր",
       ]);
 
-      const result: string[] = [];
-      const output: string[] = [
+      const output: string[] = [];
+      const expectedOutput: string[] = [
         "«Վ․Սահակյան» սեփականատեր",
         "«Լիլիթ Սահակյան» սեփականատեր",
         "«Գայանե Պողոսյան» սեփականատեր",
       ];
 
       // @ts-expect-error: Force access to the private method
-      text._collectOwners(result);
+      text._collectOwners(output);
       const allEmpty = text.every(word => word.isEmpty());
 
-      expect(result).toStrictEqual(output);
+      expect(output).toStrictEqual(expectedOutput);
       expect(allEmpty).toBe(true);
     });
 
@@ -430,7 +430,7 @@ describe("EnhancedStringArray", () => {
       ]);
 
       const streetName: string[] = [];
-      const output: string[] = [
+      const expectedOutput: string[] = [
         "Սաֆարյան",
         "Ս․",
         "զանգ.",
@@ -446,7 +446,7 @@ describe("EnhancedStringArray", () => {
         .slice(1, 8)
         .every((word) => word.isEmpty());
 
-      expect(streetName).toStrictEqual(output);
+      expect(streetName).toStrictEqual(expectedOutput);
       expect(allEmpty).toBe(true);
     });
 
@@ -461,7 +461,7 @@ describe("EnhancedStringArray", () => {
       ]);
 
       const avenueName: string[] = [];
-      const output: string[] = [ "Մյասնիկյան" ];
+      const expectedOutput: string[] = [ "Մյասնիկյան" ];
 
       // @ts-expect-error: Force access to the private method
       text._parseStreetName(2, avenueName);
@@ -470,7 +470,7 @@ describe("EnhancedStringArray", () => {
         .slice(1, 3)
         .every((word) => word.isEmpty());
 
-      expect(avenueName).toStrictEqual(output);
+      expect(avenueName).toStrictEqual(expectedOutput);
       expect(allEmpty).toBe(true);
     });
 
@@ -511,13 +511,13 @@ describe("EnhancedStringArray", () => {
         "շենքեր",
       ]);
 
-      const result: string[] = [];
-      const output: string[] = [ "124 շենք", "34 շենք", "68 շենք" ];
+      const output: string[] = [];
+      const expectedOutput: string[] = [ "124 շենք", "34 շենք", "68 շենք" ];
 
       // @ts-expect-error: Force access to the private method
-      text._collectMultipleProperties(0, 4, result);
+      text._collectMultipleProperties(0, 4, output);
 
-      expect(result).toStrictEqual(output);
+      expect(output).toStrictEqual(expectedOutput);
     });
 
     test("_collectSingleProperty collects single numeric property", () => {
@@ -526,13 +526,13 @@ describe("EnhancedStringArray", () => {
         "շենքում",
       ]);
 
-      const result: string[] = [];
-      const output: string[] = [ "124 շենք" ];
+      const output: string[] = [];
+      const expectedOutput: string[] = [ "124 շենք" ];
 
       // @ts-expect-error: Force access to the private method
-      text._collectSingleProperty(0, 1, result);
+      text._collectSingleProperty(0, 1, output);
 
-      expect(result).toStrictEqual(output);
+      expect(output).toStrictEqual(expectedOutput);
     });
 
     test("_parseProperties parses single property", () => {
@@ -543,14 +543,14 @@ describe("EnhancedStringArray", () => {
         "շենք",
       ]);
 
-      const result: string[] = [];
-      const output: string[] = [ "20/4 շենք" ];
+      const output: string[] = [];
+      const expectedOutput: string[] = [ "20/4 շենք" ];
 
       // @ts-expect-error: Force access to the private method
-      text._parseProperties(1, result);
+      text._parseProperties(1, output);
       const allEmpty = text.every(word => word.isEmpty());
 
-      expect(result).toStrictEqual(output);
+      expect(output).toStrictEqual(expectedOutput);
       expect(allEmpty).toBe(true);
     });
 
@@ -564,14 +564,14 @@ describe("EnhancedStringArray", () => {
         "շենքեր",
       ]);
 
-      const result: string[] = [];
-      const output: string[] = [ "20/4 շենք", "34 շենք", "62 շենք" ];
+      const output: string[] = [];
+      const expectedOutput: string[] = [ "20/4 շենք", "34 շենք", "62 շենք" ];
 
       // @ts-expect-error: Force access to the private method
-      text._parseProperties(1, result);
+      text._parseProperties(1, output);
       const allEmpty = text.every(word => word.isEmpty());
 
-      expect(result).toStrictEqual(output);
+      expect(output).toStrictEqual(expectedOutput);
       expect(allEmpty).toBe(true);
     });
 
@@ -581,13 +581,13 @@ describe("EnhancedStringArray", () => {
         "փ.",
       ]);
 
-      const result: string[] = [];
-      const output: string[] = [ "Սաֆարյան փողոց" ];
+      const output: string[] = [];
+      const expectedOutput: string[] = [ "Սաֆարյան փողոց" ];
 
       // @ts-expect-error: Force access to the private method
-      text._parseStreetsAndProperties(result);
+      text._parseStreetsAndProperties(output);
 
-      expect(result).toStrictEqual(output);
+      expect(output).toStrictEqual(expectedOutput);
     });
 
     test("_parseStreetsAndProperties parses street with a property", () => {
@@ -598,13 +598,13 @@ describe("EnhancedStringArray", () => {
         "շենք",
       ]);
 
-      const result: string[] = [];
-      const output: string[] = [ "Սաֆարյան փողոց 12 շենք" ];
+      const output: string[] = [];
+      const expectedOutput: string[] = [ "Սաֆարյան փողոց 12 շենք" ];
 
       // @ts-expect-error: Force access to the private method
-      text._parseStreetsAndProperties(result);
+      text._parseStreetsAndProperties(output);
 
-      expect(result).toStrictEqual(output);
+      expect(output).toStrictEqual(expectedOutput);
     });
 
     test("_parseStreetsAndProperties parses street with properties", () => {
@@ -617,17 +617,17 @@ describe("EnhancedStringArray", () => {
         "շենքեր",
       ]);
 
-      const result: string[] = [];
-      const output: string[] = [
+      const output: string[] = [];
+      const expectedOutput: string[] = [
         "Սաֆարյան փողոց 12 շենք",
         "Սաֆարյան փողոց 24 շենք",
         "Սաֆարյան փողոց 34 շենք",
       ];
 
       // @ts-expect-error: Force access to the private method
-      text._parseStreetsAndProperties(result);
+      text._parseStreetsAndProperties(output);
 
-      expect(result).toStrictEqual(output);
+      expect(output).toStrictEqual(expectedOutput);
     });
 
     test("_parseStreetWithoutWordStreet parses street and numeric properties without word <STREET>", () => {
