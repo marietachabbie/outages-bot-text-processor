@@ -299,6 +299,21 @@ describe("EnhancedStringArray", () => {
       expect(allEmpty).toBe(true);
     });
 
+    test("_getStartOfOwnersList returns index of the start of the first owner", () => {
+      const text = new EnhancedStringArray([
+        "«Վահրամ",
+        "Սահակյան»,",
+        "և",
+        "«Լիլիթ",
+        "Սահակյան»",
+        "սեփականատերեր",
+      ]);
+
+      // @ts-expect-error: Force access to the private method
+      const result = text._getStartOfOwnersList(5);
+      expect(result).toBe(0);
+    });
+
     test("_collectPluralKindergartens collects numerical names for kindergartens", () => {
       const text = new EnhancedStringArray([
         "թիվ",
@@ -459,6 +474,67 @@ describe("EnhancedStringArray", () => {
       expect(allEmpty).toBe(true);
     });
 
+    test("_getInfrastructureType returns type of infrastructure", () => {
+      const buildingText = new EnhancedStringArray([
+        "124,",
+        "34",
+        "շենքեր",
+      ]);
+
+      const houseText = new EnhancedStringArray([
+        "124",
+        "34",
+        "տները",
+      ]);
+
+      const privateHouseText = new EnhancedStringArray([
+        "124",
+        "34",
+        "սեփական",
+        "տներ",
+      ]);
+
+      // @ts-expect-error: Force access to the private method
+      expect(buildingText._getInfrastructureType(2)).toBe("շենք");
+      // @ts-expect-error: Force access to the private method
+      expect(houseText._getInfrastructureType(2)).toBe("տուն");
+      // @ts-expect-error: Force access to the private method
+      expect(privateHouseText._getInfrastructureType(3)).toBe("սեփական տուն");
+    });
+
+    test("_collectMultipleProperties collects multiple numeric properties", () => {
+      const text = new EnhancedStringArray([
+        "124,",
+        "34,",
+        "և",
+        "68",
+        "շենքեր",
+      ]);
+
+      const result: string[] = [];
+      const output: string[] = [ "124 շենք", "34 շենք", "68 շենք" ];
+
+      // @ts-expect-error: Force access to the private method
+      text._collectMultipleProperties(0, 4, result);
+
+      expect(result).toStrictEqual(output);
+    });
+
+    test("_collectSingleProperty collects single numeric property", () => {
+      const text = new EnhancedStringArray([
+        "124,",
+        "շենքում",
+      ]);
+
+      const result: string[] = [];
+      const output: string[] = [ "124 շենք" ];
+
+      // @ts-expect-error: Force access to the private method
+      text._collectSingleProperty(0, 1, result);
+
+      expect(result).toStrictEqual(output);
+    });
+
     test("_parseProperties parses single property", () => {
       const text = new EnhancedStringArray([
         "",
@@ -553,5 +629,17 @@ describe("EnhancedStringArray", () => {
 
       expect(result).toStrictEqual(output);
     });
+
+    test("_parseStreetWithoutWordStreet parses street and numeric properties without word <STREET>", () => {
+      const enhancedText = new EnhancedStringArray([]);
+      const text = "Վարդանանց 23, 24, և 32 շենքերը";
+      const addresses: string[] = [];
+
+      // @ts-expect-error: Force access to the private method
+      const output = enhancedText._parseStreetWithoutWordStreet(text, addresses);
+
+      expect(addresses).toStrictEqual([ 'Վարդանանց 23 շենք', 'Վարդանանց 24 շենք', 'Վարդանանց 32 շենք' ]);
+      expect(output).toBe("");
+    })
   });
 });

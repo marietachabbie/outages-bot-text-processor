@@ -335,8 +335,7 @@ export class EnhancedStringArray extends Array<EnhancedString> {
     this.forEach((enhancedWord, i) => {
       if (enhancedWord.areOwners()) {
         if (this.get(i - 1).didAddressEnd()) {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const [ firstIdx, lastIdx ] = this._collectOwnerNames(
+          const [ _firstIdx, lastIdx ] = this._collectOwnerNames(
             i + 1,
             this.length - 1,
             result,
@@ -344,8 +343,7 @@ export class EnhancedStringArray extends Array<EnhancedString> {
           if (lastIdx >= 0) stringCleaner.removeParsedWords(this, i, lastIdx);
         } else {
           const startIndex: number = this._getStartOfOwnersList(i);
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const [ firstIdx, lastIdx ] = this._collectOwnerNames(
+          const [ firstIdx, _lastIdx ] = this._collectOwnerNames(
             startIndex,
             i - 1,
             result,
@@ -384,10 +382,11 @@ export class EnhancedStringArray extends Array<EnhancedString> {
     }
   }
 
-  private _collectLanes(result: string[], idx: number): number {
-    // TODO: If there is a continuation to lane, need to not remove street and remove empty strings?
-    const tempLanes: string[] = [];
-    const streetName: string[] = [];
+  private _determineLanesAndStreetName(
+    idx: number,
+    tempLanes: string[],
+    streetName: string[]
+  ): [ boolean, number ] {
     let hasStreetName: boolean = false;
     let nextIdx: number = -1;
 
@@ -416,6 +415,15 @@ export class EnhancedStringArray extends Array<EnhancedString> {
       }
     }
 
+    return [ hasStreetName, nextIdx ];
+  }
+
+  private _combineStreetAndLanes(
+    tempLanes: string[],
+    hasStreetName: boolean,
+    streetName: string[],
+    result: string[]
+  ) {
     if (tempLanes.length) {
       if (hasStreetName && streetName.length) {
         const strName: string = streetName.reverse().join(" ");
@@ -433,6 +441,14 @@ export class EnhancedStringArray extends Array<EnhancedString> {
         );
       }
     }
+  }
+
+  private _collectLanes(result: string[], idx: number): number {
+    const tempLanes: string[] = [];
+    const streetName: string[] = [];
+
+    const [ hasStreetName, nextIdx ] = this._determineLanesAndStreetName(idx, tempLanes, streetName);
+    this._combineStreetAndLanes(tempLanes, hasStreetName, streetName, result);
 
     if (nextIdx >= 0) stringCleaner.removeParsedWords(this, nextIdx, idx);
     return nextIdx;
@@ -501,18 +517,17 @@ export class EnhancedStringArray extends Array<EnhancedString> {
 
   private _getInfrastructureType(idx: number): string {
     this.replaceOne(idx, /[,:ը]/, "");
-    let result: string = "";
     if (this.get(idx).areBuildings()) {
-      result = BUILDING;
+      return BUILDING;
     } else if (this.get(idx).areHouses()) {
       if (this.get(idx).arePrivateHouses(this.get(idx - 1))) {
-        result = PRIVATE + " " + HOUSE;
+        return PRIVATE + " " + HOUSE;
       } else {
-        result = this.get(idx).replace(HOUSES, HOUSE).value;
+        return this.get(idx).replace(HOUSES, HOUSE).value;
       }
     }
 
-    return result;
+    return "";
   }
 
   private _collectMultipleProperties(
@@ -546,10 +561,8 @@ export class EnhancedStringArray extends Array<EnhancedString> {
     }
   }
 
-  private _parseProperties(idx: number, properties: string[]): number {
+  private _getWordAndNexIndices(idx: number): [number, number, boolean] {
     let nextIdx: number = -1;
-    let wordIdx: number = -1;
-    let isPlural: boolean = false;
 
     for (let i = idx + 1; i < this.length; i++) {
       if (this.get(i).shouldIgnore()) {
@@ -558,16 +571,19 @@ export class EnhancedStringArray extends Array<EnhancedString> {
         if (this.get(i).clearCommas().doesNotContainNumbers()) {
           nextIdx = i;
           if (this.get(i).isPlural()) {
-            isPlural = true;
-            wordIdx = i;
-            break;
+            return [i, nextIdx, true];
           } else {
-            wordIdx = i;
-            break;
+            return [i, nextIdx, false];
           }
         }
       }
     }
+
+    return [-1, nextIdx, false];
+  }
+
+  private _parseProperties(idx: number, properties: string[]): number {
+    const [ wordIdx, nextIdx, isPlural ] = this._getWordAndNexIndices(idx);
 
     if (wordIdx >= 0) {
       if (!isPlural) {
@@ -642,42 +658,50 @@ export class EnhancedStringArray extends Array<EnhancedString> {
     return addresses;
   }
 
+  private _getStartOfNumericProperties(): number {
+    for (let i = 0; i < this.length; i++) {
+      if (this.get(i).doesContainNumbers()) {
+        return i;
+      }
+    }
+
+    return 0;
+  }
+
+  private _generateEnhancedStringFromText(text: string): EnhancedStringArray {
+    const splittedText: string[] = text.split(" ").filter((str) => str.length);
+    return new EnhancedStringArray(splittedText);
+  }
+
+  private _collectPropertiesAndCleanUp(startIdx: number, properties: string[]) {
+    for (let i = this.length - 1; i >= startIdx; i--) {
+      if (
+        this.get(i).areBuildings() ||
+        this.get(i).areHouses()
+      ) {
+        this._collectMultipleProperties(startIdx, i, properties);
+        stringCleaner.removeParsedWords(
+          this,
+          startIdx - properties.length,
+          i,
+        );
+      }
+    }
+  }
+
   private _parseStreetWithoutWordStreet(
     text: string,
     result: string[],
   ): string {
     if (!text || text[0] === text[0].toLowerCase()) return text;
 
-    const splittedText: string[] = text.split(" ").filter((str) => str.length);
-    const enhancedText: EnhancedStringArray = new EnhancedStringArray(
-      splittedText,
-    );
     const streetName: string[] = [];
     const properties: string[] = [];
-    let startIdx: number = 0;
-
-    for (let i = 0; i < enhancedText.length; i++) {
-      if (enhancedText.get(i).doesContainNumbers()) {
-        startIdx = i;
-        break;
-      }
-    }
+    const enhancedText: EnhancedStringArray = this._generateEnhancedStringFromText(text);
+    const startIdx: number = enhancedText._getStartOfNumericProperties();
 
     enhancedText.slice(0, startIdx + 2)._parseStreetName(startIdx, streetName);
-
-    for (let i = enhancedText.length - 1; i >= startIdx; i--) {
-      if (
-        enhancedText.get(i).areBuildings() ||
-        enhancedText.get(i).areHouses()
-      ) {
-        enhancedText._collectMultipleProperties(startIdx, i, properties);
-        stringCleaner.removeParsedWords(
-          enhancedText,
-          startIdx - properties.length,
-          i,
-        );
-      }
-    }
+    enhancedText._collectPropertiesAndCleanUp(startIdx, properties);
 
     properties.forEach(prop =>
       result.push(streetName + " " + prop),
