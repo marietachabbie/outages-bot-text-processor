@@ -263,8 +263,12 @@ export class EnhancedString {
         for (let i = parseInt(parts[0]); i <= parseInt(parts[1]); i++) {
           numbers.push(i.toString());
         }
+
+        if (parts[1].includes("/")) {
+          numbers.push(parts[1]);
+        }
       }
-    } else {
+    } else if (word.value !== PRIVATE) {
       numbers.push(word.value);
     }
   }
