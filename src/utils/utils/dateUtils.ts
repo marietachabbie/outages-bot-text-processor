@@ -4,8 +4,10 @@ import { stringCleaner } from "./stringCleaner";
 
 export const dateUtils = {
   isInFuture: (date: Date): boolean => {
-    const now: Date = new Date();
-    return date >= now;
+    const nowInUTC: Date = new Date();
+    const nowInGMT4: Date = new Date(nowInUTC.getTime() + 4 * 60 * 60 * 1000);
+
+    return date >= nowInGMT4;
   },
 
   getDay: (word: string): number | undefined => {
@@ -13,28 +15,28 @@ export const dateUtils = {
     return numeric ? parseInt(numeric[0]) : undefined;
   },
 
-  getDate: (line: string): Date => {
-    // TODO: take care of next year
-    const text = line.split(" ");
+  getDate: (lines: string[]): Date => {
+    // TODO: take care of next year, for example, if announcement comes on dec for jan 
     const year: number = new Date().getFullYear();
     let day: number | undefined;
     let month: number | undefined;
 
-    for (let i = 0; i < text.length; i++) {
-      const word = stringCleaner.clearPossessiveSuffix(text[i]);
-
-      if (word in TMonth) {
-        month = TMonth[word as keyof typeof TMonth];
-        day = dateUtils.getDay(text[i + 1]);
-        break;
+    outer:
+    for (const line of lines) {
+      const text = line.split(" ");
+      for (let [i, word] of text.entries()) {
+        word = stringCleaner.clearPossessiveSuffix(word);
+  
+        if (word in TMonth) {
+          month = TMonth[word as keyof typeof TMonth];
+          day = dateUtils.getDay(text[i + 1]);
+          break outer;
+        }
       }
     }
 
-    if (!day || !month) throw new NoDateFoundError({
-      name: "NO_DATE_FOUND",
-      message: "No valid date found",
-    });
+    if (!day || !month) throw new NoDateFoundError();
 
-    return new Date(year, month, day, 0, 0, 0, 0);
+    return new Date(Date.UTC(year, month, day, 23, 59, 0, 0));
   },
 };

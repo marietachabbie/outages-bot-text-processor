@@ -11,7 +11,8 @@ const buildAnnouncement = (text: EnhancedStringArray, announcements: TRegionalDa
 
 const generateStructuredAnnouncement = (text: EnhancedStringArray): TRegionalData => {
   const res: TRegionalData = {};
-  const date: Date = dateUtils.getDate(text.get(0).value);
+  const firstLines: string[] = text.slice(0, 6).elements;
+  const date: Date = dateUtils.getDate(firstLines);
 
   if (dateUtils.isInFuture(date)) {
     buildAnnouncement(text, res);

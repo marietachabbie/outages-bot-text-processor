@@ -25,10 +25,7 @@ const getProvince = (word: string): TProvince => {
 
   if (cleanWord in TProvince) return TProvince[cleanWord as keyof typeof TProvince];
 
-  throw new NoProvinceFoundError({
-    name: "NO_PROVINCE_FOUND",
-    message: "Failed to retrieve province",
-  });
+  throw new NoProvinceFoundError();
 };
 
 export const provinceUtils = {
