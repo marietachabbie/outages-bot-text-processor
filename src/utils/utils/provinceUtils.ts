@@ -6,9 +6,8 @@ import { PROVINCES } from "../constants/constants";
 import { INFRASTRUCTURES } from "../constants/constants";
 import { EnhancedStringArray } from "./enhancedStringArray";
 
-const { CITY } = INFRASTRUCTURES;
+const { CITY, PROVINCE } = INFRASTRUCTURES;
 const {
-  PROVINCE,
   YEREVAN,
   LORI,
   VAYOTS,

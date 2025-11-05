@@ -30,7 +30,7 @@ describe("Date utils", () => {
       "հետևյալ հասցեների էլեկտրամատակարարումը`";
 
     expect(() => {
-      dateUtils.getDate(text);
+      dateUtils.getDate(text.split(" "));
     }).toThrow(NoDateFoundError);
   });
 });

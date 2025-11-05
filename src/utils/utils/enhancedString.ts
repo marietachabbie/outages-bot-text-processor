@@ -10,7 +10,9 @@ const {
   COMMUNITY,
   CITY,
   CITIES,
+  DISTRICT,
   DISTRICTS,
+  IE, 
   AVENUE,
   STREET,
   STREETS,
@@ -53,12 +55,21 @@ export class EnhancedString {
   }
 
   replace(param1: RegExp | string, param2: string): EnhancedString {
-    const newValue: string = this._value.replace(param1, param2);
-    return new EnhancedString(newValue);
+    if (param1 instanceof RegExp) {
+      // Ensure the RegExp has the global flag for replaceAll
+      const globalRegex = param1.global
+        ? param1
+        : new RegExp(param1.source, param1.flags + "g");
+      const newValue: string = this._value.replaceAll(globalRegex, param2);
+      return new EnhancedString(newValue);
+    } else {
+      const newValue: string = this._value.replaceAll(param1, param2);
+      return new EnhancedString(newValue);
+    }
   }
 
   clearCommas(): EnhancedString {
-    return this.replace(",", "");
+    return this.replace(/[,․.:]/g, "");
   }
 
   getStreetType(): string {
@@ -146,13 +157,24 @@ export class EnhancedString {
   }
 
   isStreet(): boolean {
-    const word: string = this._value.replace(/[.,ը]/g, "");
+    const word: string = this._value.replace(/[.․,ի,ը]/g, "");
     return word === STREET || word === STREET.slice(0, 3) || word === STREET[0];
   }
 
   isAvenue(): boolean {
-    const word: string = this._value.replace(/[.,ն]/g, "");
+    const word: string = this._value.replace(/[.․,ն]/g, "");
     return word === AVENUE || word === AVENUE.slice(0, 3) || word === AVENUE[0];
+  }
+
+  isDistrict(): boolean {
+    const word: string = this._value.replace(/[.․,ն]/g, "");
+    return (
+      word === DISTRICT || word === DISTRICT.slice(0, 3) || word === DISTRICT[0]
+    );
+  }
+
+  isIE(): boolean {
+    return this._value === IE;
   }
 
   areVillages(): boolean {
@@ -196,6 +218,11 @@ export class EnhancedString {
     return this._value.toLowerCase().startsWith(OWNERS);
   }
 
+  areOrgs(type: string): boolean {
+    return this._value.replace(',', '').endsWith("ներ") &&
+    this._value.startsWith(type);
+  }
+
   areKindergartens(): boolean {
     return this._value.includes(KINDERGARTENS);
   }
@@ -220,11 +247,11 @@ export class EnhancedString {
   }
 
   startsWithUppercase(): boolean {
-    return !!this._value && this._value[0] === this._value[0].toUpperCase();
+    return !!this._value && this._value[0] === this._value[0].toUpperCase() && !this.isNumeric();
   }
 
   startsWithLowercase(): boolean {
-    return !!this._value && this._value[0] === this._value[0].toLowerCase();
+    return !!this._value && this._value[0] === this._value[0].toLowerCase() && !this.startsWithQuote();
   }
 
   startsWithQuote(): boolean {
@@ -251,21 +278,34 @@ export class EnhancedString {
       this._value.endsWith(":") ||
       this._value.endsWith(",") ||
       this.isConjunction() ||
-      (!punctuationRegex.test(this._value[0]) && this.startsWithLowercase())
+      (!punctuationRegex.test(this._value[0]) &&
+        this.startsWithLowercase() &&
+        !this.isStreet() &&
+        !this.isAvenue() &&
+        !this.isDistrict())
     );
   }
 
   collectNumericProperties(numbers: string[]) {
     const word: EnhancedString = this.clearCommas();
     if (word.value.includes("-")) {
+      if (word.isOrdinalNumber()) {
+        numbers.push(word.value);
+        return;
+      }
+
       const parts: string[] = word.value.split("-");
       if (parts.length === 2) {
-        for (let i = parseInt(parts[0]); i <= parseInt(parts[1]); i++) {
-          numbers.push(i.toString());
+        if (parts[0].includes("/")) {
+          numbers.push(parts[0]);
         }
 
         if (parts[1].includes("/")) {
           numbers.push(parts[1]);
+        }
+
+        for (let i = parseInt(parts[0]); i <= parseInt(parts[1]); i++) {
+          numbers.push(i.toString());
         }
       }
     } else if (word.value !== PRIVATE) {

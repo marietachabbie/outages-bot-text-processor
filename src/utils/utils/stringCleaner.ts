@@ -14,7 +14,7 @@ export const stringCleaner = {
   },
 
   clearSuffixes: (word: EnhancedString): string => {
-    let clean: string = word.replace(/[`՝,]/g, '').value;
+    let clean: string = word.replace(/[`՝,.․:]/g, '').value;
     if (clean.endsWith('ի')) {
       clean = clean.slice(0, -1);
     } else if (clean.endsWith('ում')) {

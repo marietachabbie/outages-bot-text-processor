@@ -17,6 +17,8 @@ export const CONSTANT_WORDS = {
   OTHER: "Այլ",
 };
 
+export const WARNING_TO_IGNORE: string = "«Հայաստանի էլեկտրական ցանցեր» ընկերությունը հորդորում է հետևել էլեկտրաանվտանգության կանոններին:";
+
 export const LOWERCASE_VILLAGE_NAMES: Set<string> = new Set([
   "սովխոզ",
   "աղբյուր",
@@ -28,17 +30,19 @@ export const WORDS_TO_IGNORE = new Set<string>([
   "սեփական",
   "մասնակի",
   "ամբողջությամբ",
+  "տարածքում",
+  "գործող",
 ]);
 
 export const WORDS_TO_REMOVE = {
   NOT: "ոչ",
   RESIDENT: "բնակիչ",
   ACCOUNT_HOLDERS: "բաժանորդներ",
+  ACCOUNT_HOLDER: "բաժանորդ", 
   AREAS: "տարածքներ",
 };
 
 export const PROVINCES = {
-  PROVINCE: "մարզ",
   YEREVAN: "Երևան",
   LORI: "Լոռի",
   VAYOTS: "Վայոց",
@@ -46,6 +50,7 @@ export const PROVINCES = {
 };
 
 export const INFRASTRUCTURES = {
+  PROVINCE: "մարզ",
   VILLAGE: "գյուղ",
   VILLAGES: "գյուղեր",
   COMMUNITY: "համայնք",
@@ -53,6 +58,7 @@ export const INFRASTRUCTURES = {
   CITIES: "քաղաքներ",
   DISTRICT: "թաղամաս",
   DISTRICTS: "թաղամասեր",
+  IE: "ԱՁ",
   AVENUE: "պողոտա",
   STREET: "փողոց",
   STREETS: "փողոցներ",
@@ -64,6 +70,8 @@ export const INFRASTRUCTURES = {
   BUILDINGS: "շենքեր",
   OWNER: "սեփականատեր",
   OWNERS: "սեփականատերեր",
+  LLC: "ՍՊԸ",
+  CJSC: "ՓԲԸ",
   HOMETOWN: "տնակային ավան",
   HOMETOWNS: "տնակային ավաններ",
   KINDERGARTEN: "մանկապարտեզ",
