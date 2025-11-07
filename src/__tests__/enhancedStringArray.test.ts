@@ -70,7 +70,6 @@ describe("EnhancedStringArray", () => {
         Արարատ: {
           "Արարատ գյուղ": [
             "«Արարատ կաթ» ՍՊԸ",
-            "«Սեդրակ Սարգսյան» ԱՁ",
             "Զինմաս",
           ],
         },
@@ -299,7 +298,7 @@ describe("EnhancedStringArray", () => {
       expect(allEmpty).toBe(true);
     });
 
-    test("_getStartOfOwnersList returns index of the start of the first owner", () => {
+    test("_getStartOfBusinessList returns index of the start of the first owner", () => {
       const text = new EnhancedStringArray([
         "«Վահրամ",
         "Սահակյան»,",
@@ -310,7 +309,7 @@ describe("EnhancedStringArray", () => {
       ]);
 
       // @ts-expect-error: Force access to the private method
-      const output = text._getStartOfOwnersList(5);
+      const output = text._getStartOfBusinessList(5);
       expect(output).toBe(0);
     });
 
@@ -388,6 +387,28 @@ describe("EnhancedStringArray", () => {
       expect(allEmpty).toBe(true);
     });
 
+    test("_collectBusinessNames collects IE listed AFTER word <IE>", () => {
+      const text = new EnhancedStringArray([
+        "ԱՁ",
+        "«Վ․ Սահակյան»",
+      ]);
+      const output: string[] = [];
+
+      // @ts-expect-error: Force access to the private method
+      text._collectBusinessNames(1, 3, 'ԱՁ', output); // TODO: switch to const
+    });
+
+    test("_collectBusinessNames collects IE listed BEFORE word <IE>", () => {
+      const text = new EnhancedStringArray([
+        "«Վ․ Սահակյան»",
+        "ԱՁ",
+      ]);
+      const output: string[] = [];
+
+      // @ts-expect-error: Force access to the private method
+      text._collectBusinessNames(0, 1, 'ԱՁ', output); // TODO: switch to const
+    });
+
     test("_collectOwners collects plural owners listed BEFORE word <owner>", () => {
       const text = new EnhancedStringArray([
         "«Վ․Սահակյան»,",
@@ -431,14 +452,14 @@ describe("EnhancedStringArray", () => {
 
       const streetName: string[] = [];
       const expectedOutput: string[] = [
-        "Սաֆարյան",
-        "Ս․",
-        "զանգ.",
-        "1-ին",
-        "Նորք",
         "Նոր",
+        "Նորք",
+        "1-ին",
+        "զանգ.",
+        "Ս․",
+        "Սաֆարյան",
       ];
-
+      
       // @ts-expect-error: Force access to the private method
       text._parseStreetName(7, streetName);
 

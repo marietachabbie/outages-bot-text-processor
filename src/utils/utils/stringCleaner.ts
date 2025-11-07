@@ -49,7 +49,8 @@ export const stringCleaner = {
         if ((text.get(i).endsWithComma() ||
           text.get(i).isConjunction()) &&
           !!text.get(i - 1).value &&
-          !(text.get(i - 1).endsWithComma())
+          !(text.get(i - 1).endsWithComma()) ||
+          text.get(i - 1).endsWithQuote()
         ) {
           text.get(i - 1).add(',');
         }

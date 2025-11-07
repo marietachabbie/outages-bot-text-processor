@@ -3,13 +3,13 @@ import { TProvince } from "../../types/region";
 import { TRegionalData } from "../../types/regional-data";
 import { municipalityUtils } from "./municipalityUtils";
 import { stringCleaner } from "./stringCleaner";
-import { CONSTANT_WORDS, WARNING_TO_IGNORE } from "../constants/constants";
+import { CONSTANT_WORDS, WARNINGS_TO_IGNORE } from "../constants/constants";
 
 import { WORDS_TO_REMOVE, INFRASTRUCTURES } from "../constants/constants";
 
 const { NUMBER, OTHER } = CONSTANT_WORDS;
 
-const { NOT, RESIDENT, ACCOUNT_HOLDER, ACCOUNT_HOLDERS, AREAS } = WORDS_TO_REMOVE;
+const { NOT, RESIDENT, ABONNEMENT, ABONNEMENTS, AREAS } = WORDS_TO_REMOVE;
 
 const {
   DISTRICT,
@@ -129,10 +129,12 @@ export class EnhancedStringArray extends Array<EnhancedString> {
       let prevIdx: number = this.length + 1;
 
       if (lastMunicipality && announcements[province]) {
-        for (let i = 0; i < this.length; i++) {
+        outer: for (let i = 0; i < this.length; i++) {
           const line = this.slice(i, prevIdx).elements.join(' ');
-          if (this._isLike(line, WARNING_TO_IGNORE)) {
-            break;
+          for (const warning of WARNINGS_TO_IGNORE) {
+            if (this._isLike(line, warning)) {
+              break outer;
+            }
           }
 
           announcements[province][lastMunicipality] ??= [];
@@ -162,8 +164,8 @@ export class EnhancedStringArray extends Array<EnhancedString> {
     if (
       currWord.isConjunction() ||
       currWord.value === AREAS ||
-      currWord.value === ACCOUNT_HOLDER ||
-      currWord.value === ACCOUNT_HOLDERS ||
+      currWord.value === ABONNEMENT ||
+      currWord.value === ABONNEMENTS ||
       currWord.isLonelyWord(prevWord, nextWord)
     ) {
       return true;
@@ -172,17 +174,18 @@ export class EnhancedStringArray extends Array<EnhancedString> {
     if (currWord.value === NOT) {
       if (
         (nextWord.value === RESIDENT &&
-          nextNextWord.value === ACCOUNT_HOLDERS) ||
-        nextWord.value === RESIDENT + ACCOUNT_HOLDERS ||
-        nextWord.value === RESIDENT + ACCOUNT_HOLDER
+          nextNextWord.value === ABONNEMENTS) ||
+        nextWord.value === RESIDENT + ABONNEMENTS ||
+        nextWord.value === RESIDENT + ABONNEMENT
       ) {
         return true;
       }
     }
 
     if (
-      (currWord.value === RESIDENT && nextWord.value === ACCOUNT_HOLDERS) ||
-      currWord.value === RESIDENT + ACCOUNT_HOLDERS
+      (currWord.value === RESIDENT && nextWord.value === ABONNEMENTS) ||
+      currWord.value === RESIDENT + ABONNEMENTS ||
+      currWord.value === RESIDENT + ABONNEMENT
     ) {
       return true;
     }
@@ -523,7 +526,6 @@ export class EnhancedStringArray extends Array<EnhancedString> {
         } else if (this.get(i).isStreet()) {
           hasStreetName = true;
         } else if (this.get(i).startsWithUppercase()) {
-          streetName.push(this.elements[i]);
           nextIdx = i;
         } else if (this.get(i).isNumeric()) {
           if (hasStreetName) this._parseStreetName(i + 1, streetName);

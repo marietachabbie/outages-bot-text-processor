@@ -17,7 +17,10 @@ export const CONSTANT_WORDS = {
   OTHER: "Այլ",
 };
 
-export const WARNING_TO_IGNORE: string = "«Հայաստանի էլեկտրական ցանցեր» ընկերությունը հորդորում է հետևել էլեկտրաանվտանգության կանոններին:";
+export const WARNINGS_TO_IGNORE: string[] = [
+  "«Հայաստանի էլեկտրական ցանցեր» ընկերությունը հորդորում է հետևել էլեկտրաանվտանգության կանոններին:",
+  "Սպառած էլեկտրաէներգիայի, անջատումների, Ձեր իրավունքներին կամ պարտականություններին վերաբերող, ինչպես նաև այլ հարցերի առնչությամբ կարող եք զանգահարել 1-80 և 0 8000 0 180 շուրջօրյա գործող հեռախոսահամարներով:",
+];
 
 export const LOWERCASE_VILLAGE_NAMES: Set<string> = new Set([
   "սովխոզ",
@@ -37,8 +40,8 @@ export const WORDS_TO_IGNORE = new Set<string>([
 export const WORDS_TO_REMOVE = {
   NOT: "ոչ",
   RESIDENT: "բնակիչ",
-  ACCOUNT_HOLDERS: "բաժանորդներ",
-  ACCOUNT_HOLDER: "բաժանորդ", 
+  ABONNEMENTS: "բաժանորդներ",
+  ABONNEMENT: "բաժանորդ", 
   AREAS: "տարածքներ",
 };
 
