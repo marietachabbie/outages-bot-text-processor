@@ -130,7 +130,6 @@ dist
 .pnp.*
 
 # local testing
-/src/__tests__/input-examples/*
 el_input_file.json
 notes.json
 launch.json
