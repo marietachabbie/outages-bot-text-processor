@@ -1,8 +1,10 @@
 import { TProvince } from "../../types/region";
 import { stringCleaner } from "./stringCleaner";
-import { CITIES, VILLAGES, COMMUNITIES } from "../constants/constants";
+import { CITIES, VILLAGES, COMMUNITIES, INFRASTRUCTURES } from "../constants/constants";
 import { EnhancedStringArray } from "./enhancedStringArray";
 import { EnhancedString } from "./enhancedString";
+
+const { VILLAGE, CITY, COMMUNITY } = INFRASTRUCTURES;
 
 const getStartIndex = (words: EnhancedStringArray, idx: number): number => {
   let start: number = idx - 1;
@@ -64,11 +66,11 @@ const collectMunicipalities = (
     tempData.set(i, tempData.get(i).clearCommas().value);
     if (municipalityType.isVillage()) {
       if (VILLAGES[province].has(tempData.get(i).value)) {
-        result.push(tempData.get(i).value + " " + municipalityType.value);
+        result.push(tempData.get(i).value + " " + VILLAGE);
       }
     } else if (municipalityType.isCity()) {
       if (CITIES[province].has(tempData.get(i).value)) {
-        result.push(tempData.get(i).value + " " + municipalityType.value);
+        result.push(tempData.get(i).value + " " + CITY);
       }
     }
   }
@@ -84,11 +86,11 @@ export const municipalityUtils = {
     words.set(idx, stringCleaner.clearSuffixes(words.get(idx)));
 
     if (words.get(idx).isVillage()) {
-      if (VILLAGES[province].has(temp)) municipality = temp + " " + words.get(idx).value;
+      if (VILLAGES[province].has(temp)) municipality = temp + " " + VILLAGE;
     } else if (words.get(idx).isCity()) {
-      if (CITIES[province].has(temp)) municipality = temp + " " + words.get(idx).value;
+      if (CITIES[province].has(temp)) municipality = temp + " " + CITY;
     } else if (words.get(idx).isCommunity()) {
-      if (COMMUNITIES[province].has(temp)) municipality = temp + " " + words.get(idx).value;
+      if (COMMUNITIES[province].has(temp)) municipality = temp + " " + COMMUNITY;
     }
 
     stringCleaner.removeParsedWords(words, start, idx);

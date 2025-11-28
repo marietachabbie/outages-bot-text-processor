@@ -27,7 +27,7 @@ export const stringCleaner = {
   },
 
   clearPluralSuffix: (word: string): EnhancedString => {
-    let clean: string = word;
+    let clean: string = word.replace(/[ը,:]/, '');
     if (clean.endsWith("ներ")) {
       clean = clean.slice(0, -3);
     } else if (clean.endsWith("եր")) {

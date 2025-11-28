@@ -11,13 +11,16 @@ const {
   CITY,
   CITIES,
   DISTRICT,
-  DISTRICTS,
   IE, 
   AVENUE,
   STREET,
   STREETS,
+  LANE,
   LANES,
+  BLIND_ALLEY,
+  HOUSE,
   HOUSES,
+  BUILDING,
   BUILDINGS,
   OWNERS,
   HOMETOWNS,
@@ -177,6 +180,22 @@ export class EnhancedString {
     return this._value === IE;
   }
 
+  isHouse(): boolean {
+    return this._value.includes(HOUSE);
+  }
+
+  isBuilding(): boolean {
+    return this._value.startsWith(BUILDING);
+  }
+
+  isLane(): boolean {
+    return this._value.startsWith(LANE);
+  }
+
+  isBlindAlley(): boolean {
+    return this._value.startsWith(BLIND_ALLEY);
+  }
+
   areVillages(): boolean {
     return (
       this._value === VILLAGES ||
@@ -195,7 +214,8 @@ export class EnhancedString {
   }
 
   areDistricts(): boolean {
-    return this._value.startsWith(DISTRICTS);
+    const cleanedWord: string = this._value.replace(/[.,ը]/g, "");
+    return cleanedWord.startsWith(DISTRICT) && cleanedWord.endsWith("եր");
   }
 
   areHometowns(prev?: EnhancedString): boolean {
