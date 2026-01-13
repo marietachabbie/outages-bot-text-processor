@@ -205,7 +205,7 @@ export class EnhancedString {
 
   areDistricts(): boolean {
     const cleanedWord: string = this._value.replace(/[.,ը]/g, "");
-    return cleanedWord.startsWith(DISTRICT) && cleanedWord.endsWith("եր");
+    return cleanedWord.startsWith(DISTRICT) && cleanedWord.includes("եր");
   }
 
   areHometowns(prev?: EnhancedString): boolean {
