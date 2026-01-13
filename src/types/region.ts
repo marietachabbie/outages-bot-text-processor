@@ -13,5 +13,5 @@ export enum TProvince {
 }
 
 export interface TMunicipality {
-  [key: string]: string[],
+  [key: string]: string[];
 }

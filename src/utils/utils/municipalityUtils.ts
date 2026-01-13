@@ -9,8 +9,12 @@ const { VILLAGE, CITY, COMMUNITY } = INFRASTRUCTURES;
 const getStartIndex = (words: EnhancedStringArray, idx: number): number => {
   let start: number = idx - 1;
   for (let i = idx - 1; i >= idx - 3; i--) {
-    if (!!words.get(i).value && words.get(i).doesNotContainNumbers()
-      && !(words.get(i).endsWithComma()) && words.get(i).isPartOfVillageName()) {
+    if (
+      !!words.get(i).value &&
+      words.get(i).doesNotContainNumbers() &&
+      !words.get(i).endsWithComma() &&
+      words.get(i).isPartOfVillageName()
+    ) {
       start = i;
     } else break;
   }
@@ -21,7 +25,7 @@ const getStartIndex = (words: EnhancedStringArray, idx: number): number => {
 const collectTempMunicipalities = (
   words: EnhancedStringArray,
   idx: number,
-): { tempMunicipalities: EnhancedStringArray, count: number } => {
+): { tempMunicipalities: EnhancedStringArray; count: number } => {
   const tempMunicipalities: EnhancedStringArray = new EnhancedStringArray([ words.get(idx).value ]);
   let temp: string = "";
   let count: number = 1;
@@ -59,8 +63,9 @@ const collectMunicipalities = (
   result: string[],
   province: TProvince,
 ) => {
-  const municipalityType: EnhancedString = stringCleaner
-    .clearPluralSuffix(stringCleaner.clearSuffixes(tempData.get(0)));
+  const municipalityType: EnhancedString = stringCleaner.clearPluralSuffix(
+    stringCleaner.clearSuffixes(tempData.get(0)),
+  );
 
   for (let i = 1; i < tempData.length; i++) {
     tempData.set(i, tempData.get(i).clearCommas().value);

@@ -1,8 +1,4 @@
-import {
-  LOWERCASE_VILLAGE_NAMES,
-  WORDS_TO_IGNORE,
-  INFRASTRUCTURES,
-} from "../constants/constants";
+import { LOWERCASE_VILLAGE_NAMES, WORDS_TO_IGNORE, INFRASTRUCTURES } from "../constants/constants";
 
 const {
   VILLAGE,
@@ -11,7 +7,7 @@ const {
   CITY,
   CITIES,
   DISTRICT,
-  IE, 
+  IE,
   AVENUE,
   STREET,
   STREETS,
@@ -60,9 +56,7 @@ export class EnhancedString {
   replace(param1: RegExp | string, param2: string): EnhancedString {
     if (param1 instanceof RegExp) {
       // Ensure the RegExp has the global flag for replaceAll
-      const globalRegex = param1.global
-        ? param1
-        : new RegExp(param1.source, param1.flags + "g");
+      const globalRegex = param1.global ? param1 : new RegExp(param1.source, param1.flags + "g");
       const newValue: string = this._value.replaceAll(globalRegex, param2);
       return new EnhancedString(newValue);
     } else {
@@ -150,9 +144,7 @@ export class EnhancedString {
   }
 
   isPartOfVillageName(): boolean {
-    return (
-      this.startsWithUppercase() || LOWERCASE_VILLAGE_NAMES.has(this._value)
-    );
+    return this.startsWithUppercase() || LOWERCASE_VILLAGE_NAMES.has(this._value);
   }
 
   isNurserySchool(): boolean {
@@ -171,9 +163,7 @@ export class EnhancedString {
 
   isDistrict(): boolean {
     const word: string = this._value.replace(/[.․,ն]/g, "");
-    return (
-      word === DISTRICT || word === DISTRICT.slice(0, 3) || word === DISTRICT[0]
-    );
+    return word === DISTRICT || word === DISTRICT.slice(0, 3) || word === DISTRICT[0];
   }
 
   isIE(): boolean {
@@ -221,9 +211,7 @@ export class EnhancedString {
   areHometowns(prev?: EnhancedString): boolean {
     const word: string = prev?._value.replace(/[.,ը]/, "") || "";
     const [ HOME, TOWNS ] = HOMETOWNS.split(" ");
-    return (
-      (word === HOME || word === HOME.slice(0, 2)) && this._value === TOWNS
-    );
+    return (word === HOME || word === HOME.slice(0, 2)) && this._value === TOWNS;
   }
 
   areHouses(): boolean {
@@ -239,8 +227,7 @@ export class EnhancedString {
   }
 
   areOrgs(type: string): boolean {
-    return this._value.replace(',', '').endsWith("ներ") &&
-    this._value.startsWith(type);
+    return this._value.replace(",", "").endsWith("ներ") && this._value.startsWith(type);
   }
 
   areKindergartens(): boolean {
@@ -260,10 +247,7 @@ export class EnhancedString {
   }
 
   shouldIgnore(): boolean {
-    return (
-      !this._value.length ||
-      WORDS_TO_IGNORE.has(this._value.replace(/[-:,ը]/g, "").trim())
-    );
+    return !this._value.length || WORDS_TO_IGNORE.has(this._value.replace(/[-:,ը]/g, "").trim());
   }
 
   startsWithUppercase(): boolean {
@@ -271,7 +255,9 @@ export class EnhancedString {
   }
 
   startsWithLowercase(): boolean {
-    return !!this._value && this._value[0] === this._value[0].toLowerCase() && !this.startsWithQuote();
+    return (
+      !!this._value && this._value[0] === this._value[0].toLowerCase() && !this.startsWithQuote()
+    );
   }
 
   startsWithQuote(): boolean {

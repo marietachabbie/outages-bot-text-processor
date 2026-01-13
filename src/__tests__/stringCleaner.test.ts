@@ -67,9 +67,7 @@ describe("String cleaner", () => {
     ]);
 
     const expectedOutput: string = "Ադոնցի նրբանցք, Արամ Մանուկյան փողոց, թիվ 152 մարզադպրոց,";
-    expect(stringCleaner.cleanUpAfterInitialProcessing(input)).toBe(
-      expectedOutput
-    );
+    expect(stringCleaner.cleanUpAfterInitialProcessing(input)).toBe(expectedOutput);
   });
 
   test("processRemainingText cleans up the text and splits by commas", () => {
@@ -80,24 +78,18 @@ describe("String cleaner", () => {
       "թիվ 152 մարզադպրոց",
     ];
 
-    expect(stringCleaner.processRemainingText(text)).toStrictEqual(
-      expectedOutput
-    );
+    expect(stringCleaner.processRemainingText(text)).toStrictEqual(expectedOutput);
   });
 
   test("clearInvalidParenthesis clears invalid parenthesis", () => {
     const text: string = "Ախուրյանի խճուղի)";
 
-    expect(stringCleaner.clearInvalidParenthesis(text)).toBe(
-      "Ախուրյանի խճուղի"
-    );
+    expect(stringCleaner.clearInvalidParenthesis(text)).toBe("Ախուրյանի խճուղի");
   });
 
   test("clearInvalidParenthesis DOES NOT clear valid parenthesis", () => {
     const text: string = "(Ախուրյանի խճուղի)";
 
-    expect(stringCleaner.clearInvalidParenthesis(text)).toBe(
-      "(Ախուրյանի խճուղի)"
-    );
+    expect(stringCleaner.clearInvalidParenthesis(text)).toBe("(Ախուրյանի խճուղի)");
   });
 });

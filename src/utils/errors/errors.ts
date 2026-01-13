@@ -1,11 +1,11 @@
 export class NoDateFoundError extends Error {
-  override name = 'NoDateFoundError'
+  override name = "NoDateFoundError";
 }
 
 export class NoProvinceFoundError extends Error {
-  override name = 'NoProvinceFoundError'
+  override name = "NoProvinceFoundError";
 }
 
 export class SomethingWentWrongError extends Error {
-  override name = 'SomethingWentWrongError'
+  override name = "SomethingWentWrongError";
 }

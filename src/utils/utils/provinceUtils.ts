@@ -7,19 +7,14 @@ import { INFRASTRUCTURES } from "../constants/constants";
 import { EnhancedStringArray } from "./enhancedStringArray";
 
 const { CITY, PROVINCE } = INFRASTRUCTURES;
-const {
-  YEREVAN,
-  LORI,
-  VAYOTS,
-  DZOR,
-} = PROVINCES;
+const { YEREVAN, LORI, VAYOTS, DZOR } = PROVINCES;
 
 const getProvince = (word: string): TProvince => {
   let cleanWord: string = stringCleaner.clearPossessiveSuffix(word);
   if (cleanWord === LORI.slice(0, 3)) {
     cleanWord = LORI;
   } else if (cleanWord === DZOR) {
-    cleanWord = VAYOTS + ' ' + DZOR;
+    cleanWord = VAYOTS + " " + DZOR;
   }
 
   if (cleanWord in TProvince) return TProvince[cleanWord as keyof typeof TProvince];
@@ -32,15 +27,14 @@ export const provinceUtils = {
     let province: TProvince | undefined;
 
     text.forEach((enhancedWord, i) => {
-      const words: EnhancedStringArray =
-        new EnhancedStringArray(enhancedWord.value.split(" "));
+      const words: EnhancedStringArray = new EnhancedStringArray(enhancedWord.value.split(" "));
       words.forEach((word, j) => {
         const clean: string = stringCleaner.clearSuffixes(word);
 
         if (clean === YEREVAN || clean === PROVINCE) {
           if (clean === YEREVAN) province = TProvince[clean as keyof typeof TProvince];
           else if (clean === PROVINCE) province = getProvince(words.elements[j - 1]);
-          text.set(i, '');
+          text.set(i, "");
         }
       });
 
@@ -54,10 +48,11 @@ export const provinceUtils = {
   processForProvince: (tempData: TTempRegionalData, resData: TRegionalData) => {
     for (const [ province, text ] of Object.entries(tempData)) {
       for (let line of text) {
-        if (province === YEREVAN) line = YEREVAN + ' ' + CITY + ' ' + line;
+        if (province === YEREVAN) line = YEREVAN + " " + CITY + " " + line;
 
-        const words: EnhancedStringArray = new EnhancedStringArray(line.split(' '))
-          .filterNotHourRanges();
+        const words: EnhancedStringArray = new EnhancedStringArray(
+          line.split(" "),
+        ).filterNotHourRanges();
         words.collectAddresses(province as TProvince, resData);
       }
     }

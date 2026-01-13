@@ -167,12 +167,8 @@ describe("Enhanced string", () => {
     expect(word1.arePrivateHouses(word2)).toBe(true);
   });
 
-  test("shouldIgnore ignores certains words", () => {
-    const words = new EnhancedStringArray([
-      "հարակից",
-      "մասնակի",
-      "ամբողջությամբ",
-    ]);
+  test("shouldIgnore ignores certain words", () => {
+    const words = new EnhancedStringArray([ "հարակից", "մասնակի", "ամբողջությամբ" ]);
 
     const allIgnored = words.every(word => word.shouldIgnore());
     expect(allIgnored).toBe(true);
@@ -189,12 +185,7 @@ describe("Enhanced string", () => {
   });
 
   test("didAddressEnd validates word that is end of address listing", () => {
-    const words = new EnhancedStringArray([
-      "մասնակի:",
-      "նրբանցք,",
-      "և",
-      "բառ",
-    ]);
+    const words = new EnhancedStringArray([ "մասնակի:", "նրբանցք,", "և", "բառ" ]);
 
     words.forEach(word => {
       expect(word.didAddressEnd()).toBe(true);

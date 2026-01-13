@@ -23,11 +23,7 @@ export const WARNINGS_TO_IGNORE: string[] = [
   "«Հայաստանի էլեկտրական ցանցեր» փակ բաժնետիրական ընկերությունը տեղեկացնում է, որ օգոստոսի 7-ին պլանային նորոգման աշխատանքներ իրականացնելու նպատակով ժամանակավորապես կդադարեցվի հետևյալ հասցեների էլեկտրամատակարարումը`",
 ];
 
-export const LOWERCASE_VILLAGE_NAMES: Set<string> = new Set([
-  "սովխոզ",
-  "աղբյուր",
-  "կայարան",
-]);
+export const LOWERCASE_VILLAGE_NAMES: Set<string> = new Set([ "սովխոզ", "աղբյուր", "կայարան" ]);
 
 export const WORDS_TO_IGNORE = new Set<string>([
   "հարակից",
@@ -45,7 +41,7 @@ export const WORDS_TO_REMOVE = {
   NOT: "ոչ",
   RESIDENT: "բնակիչ",
   ABONNEMENTS: "բաժանորդներ",
-  ABONNEMENT: "բաժանորդ", 
+  ABONNEMENT: "բաժանորդ",
   AREAS: "տարածքներ",
 };
 

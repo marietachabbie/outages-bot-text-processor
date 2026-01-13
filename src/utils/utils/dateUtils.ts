@@ -16,17 +16,16 @@ export const dateUtils = {
   },
 
   getDate: (lines: string[]): Date => {
-    // TODO: take care of next year, for example, if announcement comes on dec for jan 
+    // TODO: take care of next year, for example, if announcement comes on dec for jan
     const year: number = new Date().getFullYear();
     let day: number | undefined;
     let month: number | undefined;
 
-    outer:
-    for (const line of lines) {
+    outer: for (const line of lines) {
       const text = line.split(" ");
-      for (let [i, word] of text.entries()) {
-        word = stringCleaner.clearPossessiveSuffix(word);
-  
+      for (const [ i, originalWord ] of text.entries()) {
+        const word = stringCleaner.clearPossessiveSuffix(originalWord);
+
         if (word in TMonth) {
           month = TMonth[word as keyof typeof TMonth];
           day = dateUtils.getDay(text[i + 1]);
