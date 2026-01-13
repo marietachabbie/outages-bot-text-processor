@@ -15,7 +15,7 @@ const expectedOutput2 = JSON.parse(
 );
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const saveFile = (filename: string, data: never) => {
+const saveFileLocally = (filename: string, data: never) => {
   fs.writeFileSync(
     path.resolve(__dirname, "mock-results", filename),
     JSON.stringify(data, null, 2),
