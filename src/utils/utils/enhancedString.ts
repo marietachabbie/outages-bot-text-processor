@@ -55,7 +55,7 @@ export class EnhancedString {
 
   replace(param1: RegExp | string, param2: string): EnhancedString {
     if (param1 instanceof RegExp) {
-      // Ensure the RegExp has the global flag for replaceAll
+      /* Ensure the RegExp has the global flag for replaceAll */
       const globalRegex = param1.global ? param1 : new RegExp(param1.source, param1.flags + "g");
       const newValue: string = this._value.replaceAll(globalRegex, param2);
       return new EnhancedString(newValue);
@@ -79,7 +79,7 @@ export class EnhancedString {
   }
 
   isHourRange(): boolean {
-    const regex = /^\d{1,2}:\d{2}-\d{1,2}:\d{2}$/;
+    const regex = /^\d{1,2}:\d{2}[-–]\d{1,2}:\d{2}$/;
     return regex.test(this._value);
   }
 

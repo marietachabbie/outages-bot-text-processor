@@ -330,7 +330,7 @@ describe("EnhancedStringArray", () => {
       const output: string[] = [];
 
       // @ts-expect-error: Force access to the private method
-      text._collectBusinessNames(1, 3, "ԱՁ", output); // TODO: switch to const
+      text._collectBusinessNames(1, 3, "ԱՁ", output);
     });
 
     test("_collectBusinessNames collects IE listed BEFORE word <IE>", () => {
@@ -338,7 +338,7 @@ describe("EnhancedStringArray", () => {
       const output: string[] = [];
 
       // @ts-expect-error: Force access to the private method
-      text._collectBusinessNames(0, 1, "ԱՁ", output); // TODO: switch to const
+      text._collectBusinessNames(0, 1, "ԱՁ", output);
     });
 
     test("_collectOwners collects plural owners listed BEFORE word <owner>", () => {
