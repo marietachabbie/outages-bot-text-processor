@@ -1,4 +1,4 @@
-import { TProvince } from "../../types/region";
+import { TProvince } from "../../types/types";
 import { stringCleaner } from "./stringCleaner";
 import { CITIES, VILLAGES, COMMUNITIES, INFRASTRUCTURES } from "../constants/constants";
 import { EnhancedStringArray } from "./enhancedStringArray";
