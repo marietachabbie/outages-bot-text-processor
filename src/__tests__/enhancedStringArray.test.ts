@@ -1,6 +1,6 @@
 import { describe, expect, test } from "@jest/globals";
-import { TProvince } from "../types/region";
-import { TRegionalData } from "../types/regional-data";
+import { TProvince } from "../types/types";
+import { TRegionalData } from "../types/types";
 import { EnhancedString } from "../utils/utils/enhancedString";
 import { EnhancedStringArray } from "../utils/utils/enhancedStringArray";
 
