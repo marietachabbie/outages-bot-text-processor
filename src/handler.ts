@@ -1,6 +1,6 @@
 import { SNSEvent, SNSHandler } from "aws-lambda";
 
-import { TRegionalData } from "./types/regional-data";
+import { TRegionalData } from "./types/types";
 import utils from "./utils/utils/utils";
 
 export const handler: SNSHandler = async (event: SNSEvent) => {

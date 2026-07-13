@@ -1,4 +1,4 @@
-import { TMonth } from "../../types/month";
+import { TMonth } from "../../types/types";
 import { NoDateFoundError } from "../errors/errors";
 import { stringCleaner } from "./stringCleaner";
 

@@ -1,11 +1,13 @@
 import { EnhancedString } from "./enhancedString";
-import { TProvince } from "../../types/region";
-import { TRegionalData } from "../../types/regional-data";
+import { TProvince, TRegionalData } from "../../types/types";
 import { municipalityUtils } from "./municipalityUtils";
 import { stringCleaner } from "./stringCleaner";
-import { CONSTANT_WORDS, WARNINGS_TO_IGNORE } from "../constants/constants";
-
-import { WORDS_TO_REMOVE, INFRASTRUCTURES } from "../constants/constants";
+import {
+  CONSTANT_WORDS,
+  WARNINGS_TO_IGNORE,
+  WORDS_TO_REMOVE,
+  INFRASTRUCTURES,
+} from "../constants/constants";
 
 const { NUMBER, OTHER } = CONSTANT_WORDS;
 

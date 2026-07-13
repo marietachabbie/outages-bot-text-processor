@@ -1,5 +1,4 @@
-import { TProvince } from "../../types/region";
-import { TRegionalData, TTempRegionalData } from "../../types/regional-data";
+import { TProvince, TRegionalData, TTempRegionalData } from "../../types/types";
 import { NoProvinceFoundError } from "../errors/errors";
 import { stringCleaner } from "./stringCleaner";
 import { PROVINCES } from "../constants/constants";

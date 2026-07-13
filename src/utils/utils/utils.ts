@@ -1,4 +1,4 @@
-import { TRegionalData, TTempRegionalData } from "../../types/regional-data";
+import { TRegionalData, TTempRegionalData } from "../../types/types";
 import { dateUtils } from "./dateUtils";
 import { EnhancedStringArray } from "./enhancedStringArray";
 import { provinceUtils } from "./provinceUtils";
@@ -25,6 +25,7 @@ export default {
   parseMessage: (text: string): TRegionalData => {
     const splittedText = new EnhancedStringArray(text.split("\n"));
     const res: TRegionalData = generateStructuredAnnouncement(splittedText);
+
     return res;
   },
 };
